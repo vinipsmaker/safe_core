@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-88ac128001ac3a9a/mpid_messaging-0.0.3/src/lib.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-88ac128001ac3a9a/mpid_messaging-0.0.4/src/lib.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>lib.rs.html -- source</title>
@@ -361,6 +361,10 @@
 <span id="318">318</span>
 <span id="319">319</span>
 <span id="320">320</span>
+<span id="321">321</span>
+<span id="322">322</span>
+<span id="323">323</span>
+<span id="324">324</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2016 MaidSafe.net limited.</span>
 <span class='comment'>//</span>
@@ -630,6 +634,10 @@
     <span class='ident'>GetOutboxHeaders</span>,
     <span class='doccomment'>/// The list of headers of all messages in Sender&#39;s outbox</span>
     <span class='ident'>GetOutboxHeadersResponse</span>(<span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>MpidHeader</span><span class='op'>&gt;</span>),
+    <span class='doccomment'>/// Delete message from Client sender&#39;s outbox by sender or receiver</span>
+    <span class='ident'>DeleteMessage</span>(<span class='ident'>XorName</span>),
+    <span class='doccomment'>/// Delete header from Client receiver&#39;s inbox</span>
+    <span class='ident'>DeleteHeader</span>(<span class='ident'>XorName</span>),
 }
 
 
