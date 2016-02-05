@@ -867,6 +867,19 @@
 <span id="824">824</span>
 <span id="825">825</span>
 <span id="826">826</span>
+<span id="827">827</span>
+<span id="828">828</span>
+<span id="829">829</span>
+<span id="830">830</span>
+<span id="831">831</span>
+<span id="832">832</span>
+<span id="833">833</span>
+<span id="834">834</span>
+<span id="835">835</span>
+<span id="836">836</span>
+<span id="837">837</span>
+<span id="838">838</span>
+<span id="839">839</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2015 MaidSafe.net limited.</span>
 <span class='comment'>//</span>
@@ -904,7 +917,7 @@
 <span class='kw'>use</span> <span class='ident'>sodiumoxide</span>::<span class='ident'>crypto</span>::<span class='ident'>hash</span>::{<span class='ident'>sha256</span>, <span class='ident'>sha512</span>};
 <span class='kw'>use</span> <span class='ident'>maidsafe_utilities</span>::<span class='ident'>thread</span>::<span class='ident'>RaiiThreadJoiner</span>;
 <span class='kw'>use</span> <span class='ident'>routing</span>::{<span class='ident'>FullId</span>, <span class='ident'>StructuredData</span>, <span class='ident'>Data</span>, <span class='ident'>DataRequest</span>, <span class='ident'>Authority</span>, <span class='ident'>Event</span>, <span class='ident'>PlainData</span>};
-<span class='kw'>use</span> <span class='ident'>mpid_messaging</span>::{<span class='self'>self</span>, <span class='ident'>MpidHeader</span>, <span class='ident'>MpidMessage</span>, <span class='ident'>MpidMessageWrapper</span>};
+<span class='kw'>use</span> <span class='ident'>mpid_messaging</span>::{<span class='ident'>MpidMessage</span>, <span class='ident'>MpidMessageWrapper</span>};
 <span class='kw'>use</span> <span class='ident'>maidsafe_utilities</span>::<span class='ident'>serialisation</span>::<span class='ident'>serialise</span>;
 
 <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;use-mock-routing&quot;</span>)]</span>
@@ -1224,14 +1237,11 @@
     <span class='doccomment'>/// Send a message to receiver via the network. This is non-blocking.</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>send_message</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>mpid_account</span>: <span class='kw-2'>&amp;</span><span class='ident'>XorName</span>, <span class='ident'>msg_metadata</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>u8</span><span class='op'>&gt;</span>, <span class='ident'>msg_content</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>u8</span><span class='op'>&gt;</span>,
                         <span class='ident'>receiver</span>: <span class='ident'>XorName</span>, <span class='ident'>secret_key</span>: <span class='kw-2'>&amp;</span><span class='ident'>sign</span>::<span class='ident'>SecretKey</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>(), <span class='ident'>CoreError</span><span class='op'>&gt;</span> {
-        <span class='kw'>let</span> <span class='ident'>mpid_header</span> <span class='op'>=</span> <span class='macro'>unwrap_option</span><span class='macro'>!</span>(<span class='ident'>MpidHeader</span>::<span class='ident'>new</span>(<span class='ident'>mpid_account</span>.<span class='ident'>clone</span>(), <span class='ident'>msg_metadata</span>, <span class='ident'>secret_key</span>),
-                                         <span class='string'>&quot;Failed in composing a mpid_header&quot;</span>);
-        <span class='kw'>let</span> <span class='ident'>mpid_message</span> <span class='op'>=</span> <span class='macro'>unwrap_option</span><span class='macro'>!</span>(<span class='ident'>MpidMessage</span>::<span class='ident'>new</span>(<span class='ident'>mpid_header</span>, <span class='ident'>receiver</span>, <span class='ident'>msg_content</span>, <span class='ident'>secret_key</span>),
-                                          <span class='string'>&quot;Failed in composing a mpid_message&quot;</span>);
+        <span class='kw'>let</span> <span class='ident'>mpid_message</span> <span class='op'>=</span> <span class='macro'>unwrap_result</span><span class='macro'>!</span>(<span class='ident'>MpidMessage</span>::<span class='ident'>new</span>(<span class='ident'>mpid_account</span>.<span class='ident'>clone</span>(), <span class='ident'>msg_metadata</span>,
+                                                           <span class='ident'>receiver</span>, <span class='ident'>msg_content</span>, <span class='ident'>secret_key</span>));
         <span class='kw'>let</span> <span class='ident'>request</span> <span class='op'>=</span> <span class='ident'>MpidMessageWrapper</span>::<span class='ident'>PutMessage</span>(<span class='ident'>mpid_message</span>.<span class='ident'>clone</span>());
         <span class='kw'>let</span> <span class='ident'>serialised_request</span> <span class='op'>=</span> <span class='macro'>unwrap_result</span><span class='macro'>!</span>(<span class='ident'>serialise</span>(<span class='kw-2'>&amp;</span><span class='ident'>request</span>));
-        <span class='kw'>let</span> <span class='ident'>name</span> <span class='op'>=</span> <span class='macro'>unwrap_option</span><span class='macro'>!</span>(<span class='ident'>mpid_messaging</span>::<span class='ident'>mpid_message_name</span>(<span class='kw-2'>&amp;</span><span class='ident'>mpid_message</span>),
-                                  <span class='string'>&quot;Failed in calculate the name of a mpid_message&quot;</span>);
+        <span class='kw'>let</span> <span class='ident'>name</span> <span class='op'>=</span> <span class='macro'>unwrap_result</span><span class='macro'>!</span>(<span class='ident'>mpid_message</span>.<span class='ident'>name</span>());
         <span class='kw'>let</span> <span class='ident'>data</span> <span class='op'>=</span> <span class='ident'>Data</span>::<span class='ident'>PlainData</span>(<span class='ident'>PlainData</span>::<span class='ident'>new</span>(<span class='ident'>name</span>, <span class='ident'>serialised_request</span>));
         <span class='self'>self</span>.<span class='ident'>put</span>(<span class='ident'>data</span>, <span class='prelude-val'>Some</span>(<span class='ident'>Authority</span>::<span class='ident'>ClientManager</span>(<span class='ident'>mpid_account</span>.<span class='ident'>clone</span>())))
     }
@@ -1258,26 +1268,42 @@
     }
 
     <span class='doccomment'>/// Register as an online mpid_messaging client to the network. This is non-blocking.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>register_online</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>mpid_account</span>: <span class='kw-2'>&amp;</span><span class='ident'>XorName</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>(), <span class='ident'>CoreError</span><span class='op'>&gt;</span> {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>register_online</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>mpid_account</span>: <span class='kw-2'>&amp;</span><span class='ident'>XorName</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>ResponseGetter</span>, <span class='ident'>CoreError</span><span class='op'>&gt;</span> {
         <span class='self'>self</span>.<span class='ident'>messaging_post_request</span>(<span class='ident'>mpid_account</span>, <span class='ident'>MpidMessageWrapper</span>::<span class='ident'>Online</span>)
     }
 
     <span class='doccomment'>/// Query the targeted messages&#39; header that still in the outbox. This is non-blocking.</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>query_outbox_headers</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>mpid_account</span>: <span class='kw-2'>&amp;</span><span class='ident'>XorName</span>, <span class='ident'>headers</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>XorName</span><span class='op'>&gt;</span>)
-            <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>(), <span class='ident'>CoreError</span><span class='op'>&gt;</span> {
+            <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>ResponseGetter</span>, <span class='ident'>CoreError</span><span class='op'>&gt;</span> {
         <span class='self'>self</span>.<span class='ident'>messaging_post_request</span>(<span class='ident'>mpid_account</span>, <span class='ident'>MpidMessageWrapper</span>::<span class='ident'>OutboxHas</span>(<span class='ident'>headers</span>))
     }
 
     <span class='doccomment'>/// Get the list of messages&#39; headers that still in the outbox. This is non-blocking.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>get_outbox_headers</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>mpid_account</span>: <span class='kw-2'>&amp;</span><span class='ident'>XorName</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>(), <span class='ident'>CoreError</span><span class='op'>&gt;</span> {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>get_outbox_headers</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>mpid_account</span>: <span class='kw-2'>&amp;</span><span class='ident'>XorName</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>ResponseGetter</span>, <span class='ident'>CoreError</span><span class='op'>&gt;</span> {
         <span class='self'>self</span>.<span class='ident'>messaging_post_request</span>(<span class='ident'>mpid_account</span>, <span class='ident'>MpidMessageWrapper</span>::<span class='ident'>GetOutboxHeaders</span>)
     }
 
+    <span class='comment'>// TODO: the message_queue is a LRUcache without timeout, it needs to check whether a</span>
+    <span class='comment'>//       non-responded request will sit in the cache fowever and block the later on</span>
+    <span class='comment'>//       post requests, as all such request will bearing the same name - mpid_account</span>
     <span class='kw'>fn</span> <span class='ident'>messaging_post_request</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>mpid_account</span>: <span class='kw-2'>&amp;</span><span class='ident'>XorName</span>, <span class='ident'>request</span>: <span class='ident'>MpidMessageWrapper</span>)
-        <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>(), <span class='ident'>CoreError</span><span class='op'>&gt;</span> {
+            <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>ResponseGetter</span>, <span class='ident'>CoreError</span><span class='op'>&gt;</span> {
+        <span class='kw'>let</span> <span class='ident'>data_request</span> <span class='op'>=</span> <span class='ident'>DataRequest</span>::<span class='ident'>PlainData</span>(<span class='ident'>mpid_account</span>.<span class='ident'>clone</span>());
+
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>msg_queue</span> <span class='op'>=</span> <span class='macro'>unwrap_result</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>message_queue</span>.<span class='ident'>lock</span>());
+        <span class='kw'>if</span> <span class='ident'>msg_queue</span>.<span class='ident'>local_cache_check</span>(<span class='ident'>mpid_account</span>) {
+            <span class='kw'>return</span> <span class='prelude-val'>Ok</span>(<span class='ident'>ResponseGetter</span>::<span class='ident'>new</span>(<span class='prelude-val'>None</span>, <span class='self'>self</span>.<span class='ident'>message_queue</span>.<span class='ident'>clone</span>(), <span class='ident'>data_request</span>));
+        }
+
         <span class='kw'>let</span> <span class='ident'>serialised_request</span> <span class='op'>=</span> <span class='macro'>unwrap_result</span><span class='macro'>!</span>(<span class='ident'>serialise</span>(<span class='kw-2'>&amp;</span><span class='ident'>request</span>));
         <span class='kw'>let</span> <span class='ident'>data</span> <span class='op'>=</span> <span class='ident'>Data</span>::<span class='ident'>PlainData</span>(<span class='ident'>PlainData</span>::<span class='ident'>new</span>(<span class='ident'>mpid_account</span>.<span class='ident'>clone</span>(), <span class='ident'>serialised_request</span>));
-        <span class='self'>self</span>.<span class='ident'>post</span>(<span class='ident'>data</span>, <span class='prelude-val'>Some</span>(<span class='ident'>Authority</span>::<span class='ident'>ClientManager</span>(<span class='ident'>mpid_account</span>.<span class='ident'>clone</span>())))
+        <span class='macro'>try</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>post</span>(<span class='ident'>data</span>, <span class='prelude-val'>Some</span>(<span class='ident'>Authority</span>::<span class='ident'>ClientManager</span>(<span class='ident'>mpid_account</span>.<span class='ident'>clone</span>()))));
+
+        <span class='kw'>let</span> (<span class='ident'>msg_event_sender</span>, <span class='ident'>msg_event_receiver</span>) <span class='op'>=</span> <span class='ident'>mpsc</span>::<span class='ident'>channel</span>();
+        <span class='self'>self</span>.<span class='ident'>add_data_receive_event_observer</span>(<span class='ident'>mpid_account</span>.<span class='ident'>clone</span>(), <span class='ident'>msg_event_sender</span>.<span class='ident'>clone</span>());
+        <span class='prelude-val'>Ok</span>(<span class='ident'>ResponseGetter</span>::<span class='ident'>new</span>(<span class='prelude-val'>Some</span>((<span class='ident'>msg_event_sender</span>, <span class='ident'>msg_event_receiver</span>)),
+                               <span class='self'>self</span>.<span class='ident'>message_queue</span>.<span class='ident'>clone</span>(),
+                               <span class='ident'>data_request</span>))
     }
 
     <span class='doccomment'>/// Post data onto the network</span>
