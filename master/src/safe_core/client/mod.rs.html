@@ -880,6 +880,10 @@
 <span id="837">837</span>
 <span id="838">838</span>
 <span id="839">839</span>
+<span id="840">840</span>
+<span id="841">841</span>
+<span id="842">842</span>
+<span id="843">843</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2015 MaidSafe.net limited.</span>
 <span class='comment'>//</span>
@@ -1231,7 +1235,11 @@
             }
         };
 
-        <span class='prelude-val'>Ok</span>(<span class='macro'>try</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>routing</span>.<span class='ident'>send_put_request</span>(<span class='ident'>dst</span>, <span class='ident'>data</span>)))
+        <span class='kw'>let</span> <span class='ident'>result</span> <span class='op'>=</span> <span class='prelude-val'>Ok</span>(<span class='macro'>try</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>routing</span>.<span class='ident'>send_put_request</span>(<span class='ident'>dst</span>, <span class='ident'>data</span>)));
+        <span class='comment'>// TODO (Viv): This should be removed once we handle the appropriate success and failure</span>
+        <span class='comment'>//             results sent back from the network.</span>
+        ::<span class='ident'>std</span>::<span class='ident'>thread</span>::<span class='ident'>sleep</span>(::<span class='ident'>std</span>::<span class='ident'>time</span>::<span class='ident'>Duration</span>::<span class='ident'>from_secs</span>(<span class='number'>5</span>));
+        <span class='ident'>result</span>
     }
 
     <span class='doccomment'>/// Send a message to receiver via the network. This is non-blocking.</span>
