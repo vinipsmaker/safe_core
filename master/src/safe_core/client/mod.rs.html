@@ -926,7 +926,7 @@
 <span class='kw'>use</span> <span class='ident'>routing</span>::<span class='ident'>Client</span> <span class='kw'>as</span> <span class='ident'>Routing</span>;
 
 <span class='kw'>const</span> <span class='ident'>LOGIC_ERROR</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;static</span> <span class='ident'>str</span> <span class='op'>=</span> <span class='string'>&quot;Logic Error !! Report as bug.&quot;</span>;
-<span class='kw'>const</span> <span class='ident'>LOGIN_PACKET_TYPE_TAG</span>: <span class='ident'>u64</span> <span class='op'>=</span> ::<span class='ident'>CLIENT_STRUCTURED_DATA_TAG</span> <span class='op'>-</span> <span class='number'>1</span>;
+<span class='kw'>const</span> <span class='ident'>LOGIN_PACKET_TYPE_TAG</span>: <span class='ident'>u64</span> <span class='op'>=</span> <span class='number'>0</span>;
 
 <span class='doccomment'>/// The main self-authentication client instance that will interface all the request from high</span>
 <span class='doccomment'>/// level API&#39;s to the actual routing layer and manage all interactions with it. This is</span>
@@ -1026,7 +1026,7 @@
                                                            <span class='macro'>vec</span><span class='macro'>!</span>[<span class='ident'>account</span>.<span class='ident'>get_public_maid</span>().<span class='ident'>public_keys</span>().<span class='number'>0</span>.<span class='ident'>clone</span>()],
                                                            <span class='ident'>Vec</span>::<span class='ident'>new</span>(),
                                                            <span class='prelude-val'>Some</span>(<span class='kw-2'>&amp;</span><span class='ident'>account</span>.<span class='ident'>get_maid</span>().<span class='ident'>secret_keys</span>().<span class='number'>0</span>)));
-            <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>client</span>.<span class='ident'>put</span>(<span class='ident'>Data</span>::<span class='ident'>StructuredData</span>(<span class='ident'>account_version</span>), <span class='prelude-val'>None</span>));
+            <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>client</span>.<span class='ident'>put</span>(<span class='ident'>Data</span>::<span class='ident'>Structured</span>(<span class='ident'>account_version</span>), <span class='prelude-val'>None</span>));
         }
 
         <span class='prelude-val'>Ok</span>(<span class='ident'>client</span>)
@@ -1039,12 +1039,12 @@
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>unregistered_client</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>Client</span>::<span class='ident'>create_unregistered_client</span>());
         <span class='kw'>let</span> <span class='ident'>user_id</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>Account</span>::<span class='ident'>generate_network_id</span>(<span class='ident'>keyword</span>.<span class='ident'>as_bytes</span>(), <span class='ident'>pin</span>.<span class='ident'>as_bytes</span>()));
 
-        <span class='kw'>let</span> <span class='ident'>session_packet_request</span> <span class='op'>=</span> <span class='ident'>DataRequest</span>::<span class='ident'>StructuredData</span>(<span class='ident'>user_id</span>.<span class='ident'>clone</span>(),
+        <span class='kw'>let</span> <span class='ident'>session_packet_request</span> <span class='op'>=</span> <span class='ident'>DataRequest</span>::<span class='ident'>Structured</span>(<span class='ident'>user_id</span>.<span class='ident'>clone</span>(),
                                                                  <span class='ident'>LOGIN_PACKET_TYPE_TAG</span>);
 
         <span class='kw'>let</span> <span class='ident'>response_getter</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>unregistered_client</span>.<span class='ident'>get</span>(<span class='ident'>session_packet_request</span>, <span class='prelude-val'>None</span>));
 
-        <span class='kw'>if</span> <span class='kw'>let</span> <span class='ident'>Data</span>::<span class='ident'>StructuredData</span>(<span class='ident'>session_packet</span>) <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>response_getter</span>.<span class='ident'>get</span>()) {
+        <span class='kw'>if</span> <span class='kw'>let</span> <span class='ident'>Data</span>::<span class='ident'>Structured</span>(<span class='ident'>session_packet</span>) <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>response_getter</span>.<span class='ident'>get</span>()) {
             <span class='kw'>let</span> <span class='ident'>decrypted_session_packet</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>Account</span>::<span class='ident'>decrypt</span>(<span class='ident'>session_packet</span>.<span class='ident'>get_data</span>(),
                                                                  <span class='ident'>password</span>.<span class='ident'>as_bytes</span>(),
                                                                  <span class='ident'>pin</span>.<span class='ident'>as_bytes</span>()));
@@ -1200,7 +1200,7 @@
                <span class='ident'>request_for</span>: <span class='ident'>DataRequest</span>,
                <span class='ident'>opt_dst</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Authority</span><span class='op'>&gt;</span>)
                <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>ResponseGetter</span>, <span class='ident'>CoreError</span><span class='op'>&gt;</span> {
-        <span class='kw'>if</span> <span class='kw'>let</span> <span class='ident'>DataRequest</span>::<span class='ident'>ImmutableData</span>(..) <span class='op'>=</span> <span class='ident'>request_for</span> {
+        <span class='kw'>if</span> <span class='kw'>let</span> <span class='ident'>DataRequest</span>::<span class='ident'>Immutable</span>(..) <span class='op'>=</span> <span class='ident'>request_for</span> {
             <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>msg_queue</span> <span class='op'>=</span> <span class='macro'>unwrap_result</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>message_queue</span>.<span class='ident'>lock</span>());
             <span class='kw'>if</span> <span class='ident'>msg_queue</span>.<span class='ident'>local_cache_check</span>(<span class='kw-2'>&amp;</span><span class='ident'>request_for</span>.<span class='ident'>name</span>()) {
                 <span class='kw'>return</span> <span class='prelude-val'>Ok</span>(<span class='ident'>ResponseGetter</span>::<span class='ident'>new</span>(<span class='prelude-val'>None</span>, <span class='self'>self</span>.<span class='ident'>message_queue</span>.<span class='ident'>clone</span>(), <span class='ident'>request_for</span>));
@@ -1242,7 +1242,7 @@
         <span class='kw'>let</span> <span class='ident'>request</span> <span class='op'>=</span> <span class='ident'>MpidMessageWrapper</span>::<span class='ident'>PutMessage</span>(<span class='ident'>mpid_message</span>.<span class='ident'>clone</span>());
         <span class='kw'>let</span> <span class='ident'>serialised_request</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>serialise</span>(<span class='kw-2'>&amp;</span><span class='ident'>request</span>));
         <span class='kw'>let</span> <span class='ident'>name</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>mpid_message</span>.<span class='ident'>name</span>());
-        <span class='kw'>let</span> <span class='ident'>data</span> <span class='op'>=</span> <span class='ident'>Data</span>::<span class='ident'>PlainData</span>(<span class='ident'>PlainData</span>::<span class='ident'>new</span>(<span class='ident'>name</span>, <span class='ident'>serialised_request</span>));
+        <span class='kw'>let</span> <span class='ident'>data</span> <span class='op'>=</span> <span class='ident'>Data</span>::<span class='ident'>Plain</span>(<span class='ident'>PlainData</span>::<span class='ident'>new</span>(<span class='ident'>name</span>, <span class='ident'>serialised_request</span>));
         <span class='self'>self</span>.<span class='ident'>put</span>(<span class='ident'>data</span>, <span class='prelude-val'>Some</span>(<span class='ident'>Authority</span>::<span class='ident'>ClientManager</span>(<span class='ident'>mpid_account</span>.<span class='ident'>clone</span>())))
     }
 
@@ -1263,7 +1263,7 @@
     <span class='kw'>fn</span> <span class='ident'>messaging_delete_request</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>account</span>: <span class='kw-2'>&amp;</span><span class='ident'>XorName</span>, <span class='ident'>name</span>: <span class='kw-2'>&amp;</span><span class='ident'>XorName</span>,
                                 <span class='ident'>request</span>: <span class='ident'>MpidMessageWrapper</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>(), <span class='ident'>CoreError</span><span class='op'>&gt;</span> {
         <span class='kw'>let</span> <span class='ident'>serialised_request</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>serialise</span>(<span class='kw-2'>&amp;</span><span class='ident'>request</span>));
-        <span class='kw'>let</span> <span class='ident'>data</span> <span class='op'>=</span> <span class='ident'>Data</span>::<span class='ident'>PlainData</span>(<span class='ident'>PlainData</span>::<span class='ident'>new</span>(<span class='ident'>name</span>.<span class='ident'>clone</span>(), <span class='ident'>serialised_request</span>));
+        <span class='kw'>let</span> <span class='ident'>data</span> <span class='op'>=</span> <span class='ident'>Data</span>::<span class='ident'>Plain</span>(<span class='ident'>PlainData</span>::<span class='ident'>new</span>(<span class='ident'>name</span>.<span class='ident'>clone</span>(), <span class='ident'>serialised_request</span>));
         <span class='self'>self</span>.<span class='ident'>delete</span>(<span class='ident'>data</span>, <span class='prelude-val'>Some</span>(<span class='ident'>Authority</span>::<span class='ident'>ClientManager</span>(<span class='ident'>account</span>.<span class='ident'>clone</span>())))
     }
 
@@ -1288,7 +1288,7 @@
     <span class='comment'>//       post requests, as all such request will bearing the same name - mpid_account</span>
     <span class='kw'>fn</span> <span class='ident'>messaging_post_request</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>mpid_account</span>: <span class='kw-2'>&amp;</span><span class='ident'>XorName</span>, <span class='ident'>request</span>: <span class='ident'>MpidMessageWrapper</span>)
             <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>ResponseGetter</span>, <span class='ident'>CoreError</span><span class='op'>&gt;</span> {
-        <span class='kw'>let</span> <span class='ident'>data_request</span> <span class='op'>=</span> <span class='ident'>DataRequest</span>::<span class='ident'>PlainData</span>(<span class='ident'>mpid_account</span>.<span class='ident'>clone</span>());
+        <span class='kw'>let</span> <span class='ident'>data_request</span> <span class='op'>=</span> <span class='ident'>DataRequest</span>::<span class='ident'>Plain</span>(<span class='ident'>mpid_account</span>.<span class='ident'>clone</span>());
 
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>msg_queue</span> <span class='op'>=</span> <span class='macro'>unwrap_result</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>message_queue</span>.<span class='ident'>lock</span>());
         <span class='kw'>if</span> <span class='ident'>msg_queue</span>.<span class='ident'>local_cache_check</span>(<span class='ident'>mpid_account</span>) {
@@ -1296,7 +1296,7 @@
         }
 
         <span class='kw'>let</span> <span class='ident'>serialised_request</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>serialise</span>(<span class='kw-2'>&amp;</span><span class='ident'>request</span>));
-        <span class='kw'>let</span> <span class='ident'>data</span> <span class='op'>=</span> <span class='ident'>Data</span>::<span class='ident'>PlainData</span>(<span class='ident'>PlainData</span>::<span class='ident'>new</span>(<span class='ident'>mpid_account</span>.<span class='ident'>clone</span>(), <span class='ident'>serialised_request</span>));
+        <span class='kw'>let</span> <span class='ident'>data</span> <span class='op'>=</span> <span class='ident'>Data</span>::<span class='ident'>Plain</span>(<span class='ident'>PlainData</span>::<span class='ident'>new</span>(<span class='ident'>mpid_account</span>.<span class='ident'>clone</span>(), <span class='ident'>serialised_request</span>));
         <span class='macro'>try</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>post</span>(<span class='ident'>data</span>, <span class='prelude-val'>Some</span>(<span class='ident'>Authority</span>::<span class='ident'>ClientManager</span>(<span class='ident'>mpid_account</span>.<span class='ident'>clone</span>()))));
 
         <span class='kw'>let</span> (<span class='ident'>msg_event_sender</span>, <span class='ident'>msg_event_receiver</span>) <span class='op'>=</span> <span class='ident'>mpsc</span>::<span class='ident'>channel</span>();
@@ -1398,7 +1398,7 @@
                                          .<span class='ident'>as_ref</span>()
                                          .<span class='ident'>ok_or</span>(<span class='ident'>CoreError</span>::<span class='ident'>OperationForbiddenForClient</span>))
                                     .<span class='ident'>clone</span>();
-        <span class='kw'>let</span> <span class='ident'>session_packet_request</span> <span class='op'>=</span> <span class='ident'>DataRequest</span>::<span class='ident'>StructuredData</span>(<span class='ident'>session_packet_id</span>.<span class='ident'>clone</span>(),
+        <span class='kw'>let</span> <span class='ident'>session_packet_request</span> <span class='op'>=</span> <span class='ident'>DataRequest</span>::<span class='ident'>Structured</span>(<span class='ident'>session_packet_id</span>.<span class='ident'>clone</span>(),
                                                                  <span class='ident'>LOGIN_PACKET_TYPE_TAG</span>);
 
         <span class='kw'>let</span> <span class='ident'>response_getter</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>get</span>(<span class='ident'>session_packet_request</span>, <span class='prelude-val'>None</span>));
@@ -1408,7 +1408,7 @@
                                            .<span class='ident'>as_ref</span>()
                                            .<span class='ident'>ok_or</span>(<span class='ident'>CoreError</span>::<span class='ident'>OperationForbiddenForClient</span>));
 
-        <span class='kw'>if</span> <span class='kw'>let</span> <span class='ident'>Data</span>::<span class='ident'>StructuredData</span>(<span class='ident'>retrieved_session_packet</span>) <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>response_getter</span>.<span class='ident'>get</span>()) {
+        <span class='kw'>if</span> <span class='kw'>let</span> <span class='ident'>Data</span>::<span class='ident'>Structured</span>(<span class='ident'>retrieved_session_packet</span>) <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>response_getter</span>.<span class='ident'>get</span>()) {
             <span class='kw'>let</span> <span class='ident'>encrypted_account</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>account</span>.<span class='ident'>encrypt</span>(<span class='ident'>session_packet_keys</span>.<span class='ident'>get_password</span>(),
                                                          <span class='ident'>session_packet_keys</span>.<span class='ident'>get_pin</span>()));
 
@@ -1419,7 +1419,7 @@
                                          <span class='macro'>vec</span><span class='macro'>!</span>[<span class='ident'>account</span>.<span class='ident'>get_public_maid</span>().<span class='ident'>public_keys</span>().<span class='number'>0</span>.<span class='ident'>clone</span>()],
                                          <span class='ident'>Vec</span>::<span class='ident'>new</span>(),
                                          <span class='prelude-val'>Some</span>(<span class='kw-2'>&amp;</span><span class='ident'>account</span>.<span class='ident'>get_maid</span>().<span class='ident'>secret_keys</span>().<span class='number'>0</span>)));
-            <span class='self'>self</span>.<span class='ident'>post</span>(<span class='ident'>Data</span>::<span class='ident'>StructuredData</span>(<span class='ident'>new_account_version</span>), <span class='prelude-val'>None</span>)
+            <span class='self'>self</span>.<span class='ident'>post</span>(<span class='ident'>Data</span>::<span class='ident'>Structured</span>(<span class='ident'>new_account_version</span>), <span class='prelude-val'>None</span>)
         } <span class='kw'>else</span> {
             <span class='prelude-val'>Err</span>(<span class='ident'>CoreError</span>::<span class='ident'>ReceivedUnexpectedData</span>)
         }
@@ -1488,7 +1488,7 @@
     <span class='kw'>fn</span> <span class='ident'>unregistered_client</span>() {
         <span class='kw'>let</span> <span class='ident'>immut_data</span> <span class='op'>=</span> <span class='ident'>ImmutableData</span>::<span class='ident'>new</span>(<span class='ident'>ImmutableDataType</span>::<span class='ident'>Normal</span>,
                                             <span class='macro'>unwrap_result</span><span class='macro'>!</span>(::<span class='ident'>utility</span>::<span class='ident'>generate_random_vector</span>(<span class='number'>30</span>)));
-        <span class='kw'>let</span> <span class='ident'>orig_data</span> <span class='op'>=</span> <span class='ident'>Data</span>::<span class='ident'>ImmutableData</span>(<span class='ident'>immut_data</span>);
+        <span class='kw'>let</span> <span class='ident'>orig_data</span> <span class='op'>=</span> <span class='ident'>Data</span>::<span class='ident'>Immutable</span>(<span class='ident'>immut_data</span>);
 
         <span class='comment'>// Registered Client PUTs something onto the network</span>
         {
@@ -1503,7 +1503,7 @@
 
         <span class='comment'>// Unregistered Client should be able to retrieve the data</span>
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>unregistered_client</span> <span class='op'>=</span> <span class='macro'>unwrap_result</span><span class='macro'>!</span>(<span class='ident'>Client</span>::<span class='ident'>create_unregistered_client</span>());
-        <span class='kw'>let</span> <span class='ident'>request</span> <span class='op'>=</span> <span class='ident'>DataRequest</span>::<span class='ident'>ImmutableData</span>(<span class='ident'>orig_data</span>.<span class='ident'>name</span>(), <span class='ident'>ImmutableDataType</span>::<span class='ident'>Normal</span>);
+        <span class='kw'>let</span> <span class='ident'>request</span> <span class='op'>=</span> <span class='ident'>DataRequest</span>::<span class='ident'>Immutable</span>(<span class='ident'>orig_data</span>.<span class='ident'>name</span>(), <span class='ident'>ImmutableDataType</span>::<span class='ident'>Normal</span>);
         <span class='kw'>let</span> <span class='ident'>rxd_data</span> <span class='op'>=</span> <span class='macro'>unwrap_result</span><span class='macro'>!</span>(<span class='macro'>unwrap_result</span><span class='macro'>!</span>(<span class='ident'>unregistered_client</span>.<span class='ident'>get</span>(<span class='ident'>request</span>, <span class='prelude-val'>None</span>)).<span class='ident'>get</span>());
 
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>rxd_data</span>, <span class='ident'>orig_data</span>);
@@ -1643,11 +1643,11 @@
             <span class='kw'>let</span> <span class='ident'>immut_data</span> <span class='op'>=</span>
                 <span class='ident'>ImmutableData</span>::<span class='ident'>new</span>(<span class='ident'>ImmutableDataType</span>::<span class='ident'>Normal</span>,
                                    <span class='macro'>unwrap_result</span><span class='macro'>!</span>(::<span class='ident'>utility</span>::<span class='ident'>generate_random_vector</span>(<span class='number'>10</span>)));
-            <span class='kw'>let</span> <span class='ident'>data</span> <span class='op'>=</span> <span class='ident'>Data</span>::<span class='ident'>ImmutableData</span>(<span class='ident'>immut_data</span>);
+            <span class='kw'>let</span> <span class='ident'>data</span> <span class='op'>=</span> <span class='ident'>Data</span>::<span class='ident'>Immutable</span>(<span class='ident'>immut_data</span>);
 
             <span class='macro'>unwrap_result</span><span class='macro'>!</span>(<span class='ident'>client</span>.<span class='ident'>put</span>(<span class='ident'>data</span>.<span class='ident'>clone</span>(), <span class='prelude-val'>None</span>));
 
-            <span class='kw'>let</span> <span class='ident'>data_request</span> <span class='op'>=</span> <span class='ident'>DataRequest</span>::<span class='ident'>ImmutableData</span>(<span class='ident'>data</span>.<span class='ident'>name</span>(), <span class='ident'>ImmutableDataType</span>::<span class='ident'>Normal</span>);
+            <span class='kw'>let</span> <span class='ident'>data_request</span> <span class='op'>=</span> <span class='ident'>DataRequest</span>::<span class='ident'>Immutable</span>(<span class='ident'>data</span>.<span class='ident'>name</span>(), <span class='ident'>ImmutableDataType</span>::<span class='ident'>Normal</span>);
 
             <span class='comment'>// Should not initially be in version cache</span>
             {
@@ -1683,11 +1683,11 @@
                                                                  <span class='ident'>Vec</span>::<span class='ident'>new</span>(),
                                                                  <span class='ident'>Vec</span>::<span class='ident'>new</span>(),
                                                                  <span class='prelude-val'>None</span>));
-            <span class='kw'>let</span> <span class='ident'>data</span> <span class='op'>=</span> <span class='ident'>Data</span>::<span class='ident'>StructuredData</span>(<span class='ident'>struct_data</span>);
+            <span class='kw'>let</span> <span class='ident'>data</span> <span class='op'>=</span> <span class='ident'>Data</span>::<span class='ident'>Structured</span>(<span class='ident'>struct_data</span>);
 
             <span class='macro'>unwrap_result</span><span class='macro'>!</span>(<span class='ident'>client</span>.<span class='ident'>put</span>(<span class='ident'>data</span>.<span class='ident'>clone</span>(), <span class='prelude-val'>None</span>));
 
-            <span class='kw'>let</span> <span class='ident'>data_request</span> <span class='op'>=</span> <span class='ident'>DataRequest</span>::<span class='ident'>StructuredData</span>(<span class='ident'>id</span>, <span class='ident'>TYPE_TAG</span>);
+            <span class='kw'>let</span> <span class='ident'>data_request</span> <span class='op'>=</span> <span class='ident'>DataRequest</span>::<span class='ident'>Structured</span>(<span class='ident'>id</span>, <span class='ident'>TYPE_TAG</span>);
 
             <span class='comment'>// Should not initially be in version cache</span>
             {
