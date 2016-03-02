@@ -86,6 +86,9 @@
 <span id="43">43</span>
 <span id="44">44</span>
 <span id="45">45</span>
+<span id="46">46</span>
+<span id="47">47</span>
+<span id="48">48</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2015 MaidSafe.net limited.</span>
 <span class='comment'>//</span>
@@ -117,6 +120,9 @@
 <span class='kw'>pub</span> <span class='kw'>enum</span> <span class='ident'>NetworkEvent</span> {
     <span class='doccomment'>/// The client engine is connected to atleast one peer</span>
     <span class='ident'>Connected</span>,
+    <span class='doccomment'>/// The client engine is disconnected from the network (under usual circumstances this would</span>
+    <span class='doccomment'>/// indicate that client connection to proxy node has been lost)</span>
+    <span class='ident'>Disconnected</span>,
     <span class='doccomment'>/// Graceful Exit Condition</span>
     <span class='ident'>Terminated</span>,
 }

@@ -46,13 +46,16 @@
             <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                 [<span class='inner'>&#x2212;</span>]
             </a>
-        </span><a id='src-1464' class='srclink' href='../../src/safe_core/translated_events.rs.html#28-33' title='goto source code'>[src]</a></span></h1>
+        </span><a id='src-1486' class='srclink' href='../../src/safe_core/translated_events.rs.html#28-36' title='goto source code'>[src]</a></span></h1>
 <pre class='rust enum'>pub enum NetworkEvent {
     Connected,
+    Disconnected,
     Terminated,
 }</pre><div class='docblock'><p>Netowork Events that Client Modules need to deal with</p>
 </div><h2 class='variants'>Variants</h2>
 <table><tr><td id='variant.Connected'><code>Connected</code></td><td><div class='docblock'><p>The client engine is connected to atleast one peer</p>
+</div></td></tr><tr><td id='variant.Disconnected'><code>Disconnected</code></td><td><div class='docblock'><p>The client engine is disconnected from the network (under usual circumstances this would
+indicate that client connection to proxy node has been lost)</p>
 </div></td></tr><tr><td id='variant.Terminated'><code>Terminated</code></td><td><div class='docblock'><p>Graceful Exit Condition</p>
 </div></td></tr></table></section>
     <section id='search' class="content hidden"></section>
