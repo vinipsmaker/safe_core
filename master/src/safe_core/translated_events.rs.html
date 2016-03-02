@@ -89,6 +89,20 @@
 <span id="46">46</span>
 <span id="47">47</span>
 <span id="48">48</span>
+<span id="49">49</span>
+<span id="50">50</span>
+<span id="51">51</span>
+<span id="52">52</span>
+<span id="53">53</span>
+<span id="54">54</span>
+<span id="55">55</span>
+<span id="56">56</span>
+<span id="57">57</span>
+<span id="58">58</span>
+<span id="59">59</span>
+<span id="60">60</span>
+<span id="61">61</span>
+<span id="62">62</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2015 MaidSafe.net limited.</span>
 <span class='comment'>//</span>
@@ -109,6 +123,10 @@
 
 <span class='kw'>use</span> <span class='ident'>routing</span>::<span class='ident'>InterfaceError</span>;
 
+<span class='doccomment'>/// Network Events will be translated into values starting from this number for propagating them</span>
+<span class='doccomment'>/// beyond the FFI boudaries when required</span>
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>NETWORK_EVENT_START_RANGE</span>: <span class='ident'>i32</span> <span class='op'>=</span> <span class='number'>0</span>;
+
 <span class='comment'>// TODO(Spandan) This is a mess with new routing - get it sorted once sprint begins</span>
 <span class='doccomment'>/// Reception of reqested Data</span>
 <span class='kw'>pub</span> <span class='kw'>enum</span> <span class='ident'>DataReceivedEvent</span> {
@@ -125,6 +143,16 @@
     <span class='ident'>Disconnected</span>,
     <span class='doccomment'>/// Graceful Exit Condition</span>
     <span class='ident'>Terminated</span>,
+}
+
+<span class='kw'>impl</span> <span class='ident'>Into</span><span class='op'>&lt;</span><span class='ident'>i32</span><span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>NetworkEvent</span> {
+    <span class='kw'>fn</span> <span class='ident'>into</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>i32</span> {
+        <span class='kw'>match</span> <span class='self'>self</span> {
+            <span class='ident'>NetworkEvent</span>::<span class='ident'>Connected</span> <span class='op'>=&gt;</span> <span class='ident'>NETWORK_EVENT_START_RANGE</span>,
+            <span class='ident'>NetworkEvent</span>::<span class='ident'>Disconnected</span> <span class='op'>=&gt;</span> <span class='ident'>NETWORK_EVENT_START_RANGE</span> <span class='op'>+</span> <span class='number'>1</span>,
+            <span class='ident'>NetworkEvent</span>::<span class='ident'>Terminated</span> <span class='op'>=&gt;</span> <span class='ident'>NETWORK_EVENT_START_RANGE</span> <span class='op'>+</span> <span class='number'>2</span>,
+        }
+    }
 }
 
 <span class='doccomment'>/// Failures in operations that Client Modules need to deal with</span>
