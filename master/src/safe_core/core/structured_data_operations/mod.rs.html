@@ -273,6 +273,7 @@
 <span id="230">230</span>
 <span id="231">231</span>
 <span id="232">232</span>
+<span id="233">233</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2015 MaidSafe.net limited.</span>
 <span class='comment'>//</span>
@@ -412,7 +413,8 @@
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>data_can_fit_in_structured_data</span>() {
         <span class='comment'>// Assertion based on Fixed Key sizes</span>
-        <span class='comment'>// Maximum of 516 keys can be accomodated after serialisation. Thus the fixed key tests work on that calculation</span>
+        <span class='comment'>// Maximum of 516 keys can be accomodated after serialisation. Thus the fixed key tests work</span>
+        <span class='comment'>// on that calculation</span>
         {
             <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>keys</span> <span class='op'>=</span> <span class='ident'>test_utils</span>::<span class='ident'>get_max_sized_public_keys</span>(<span class='number'>1</span>);
             <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>DataFitResult</span>::<span class='ident'>DataFits</span>,
