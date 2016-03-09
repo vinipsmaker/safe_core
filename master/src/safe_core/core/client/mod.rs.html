@@ -924,6 +924,7 @@
 <span id="881">881</span>
 <span id="882">882</span>
 <span id="883">883</span>
+<span id="884">884</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2015 MaidSafe.net limited.</span>
 <span class='comment'>//</span>
@@ -1149,8 +1150,8 @@
     }
 
     <span class='doccomment'>/// Create an entry for the Root Directory ID for the user into the session packet, encrypt and</span>
-    <span class='doccomment'>/// store it. It will be retireved when the user logs into his account. Root directory ID is</span>
-    <span class='doccomment'>/// necessary to fetch all of user&#39;s data as all further data is encoded as meta-information</span>
+    <span class='doccomment'>/// store it. It will be retrieved when the user logs into their account. Root directory ID is</span>
+    <span class='doccomment'>/// necessary to fetch all of the user&#39;s data as all further data is encoded as meta-information</span>
     <span class='doccomment'>/// into the Root Directory or one of its subdirectories.</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>set_user_root_directory_id</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>root_dir_id</span>: <span class='ident'>XorName</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>(), <span class='ident'>CoreError</span><span class='op'>&gt;</span> {
         <span class='kw'>if</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>account</span>.<span class='ident'>as_mut</span>().<span class='ident'>ok_or</span>(<span class='ident'>CoreError</span>::<span class='ident'>OperationForbiddenForClient</span>))
@@ -1167,9 +1168,10 @@
     }
 
     <span class='doccomment'>/// Create an entry for the Maidsafe configuration specific Root Directory ID into the</span>
-    <span class='doccomment'>/// session packet, encrypt and store it. It will be retireved when the user logs into</span>
-    <span class='doccomment'>/// his account. Root directory ID is necessary to fetch all of configuration data as all further</span>
-    <span class='doccomment'>/// data is encoded as meta-information into the config Root Directory or one of its subdirectories.</span>
+    <span class='doccomment'>/// session packet, encrypt and store it. It will be retrieved when the user logs into</span>
+    <span class='doccomment'>/// their account. Root directory ID is necessary to fetch all of configuration data as all</span>
+    <span class='doccomment'>/// further data is encoded as meta-information into the config Root Directory or one of its</span>
+    <span class='doccomment'>/// subdirectories.</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>set_configuration_root_directory_id</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>,
                                                <span class='ident'>root_dir_id</span>: <span class='ident'>XorName</span>)
                                                <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>(), <span class='ident'>CoreError</span><span class='op'>&gt;</span> {

@@ -67,16 +67,17 @@ create_account. This will help log into an already created account for the user 
 SAFE-network.</p>
 </div><h4 id='method.set_user_root_directory_id' class='method'><code>fn <a href='#method.set_user_root_directory_id' class='fnname'>set_user_root_directory_id</a>(&amp;mut self, root_dir_id: <a class='struct' href='../../../xor_name/struct.XorName.html' title='xor_name::XorName'>XorName</a>) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>()</a>, <a class='enum' href='../../../safe_core/core/errors/enum.CoreError.html' title='safe_core::core::errors::CoreError'>CoreError</a>&gt;</code></h4>
 <div class='docblock'><p>Create an entry for the Root Directory ID for the user into the session packet, encrypt and
-store it. It will be retireved when the user logs into his account. Root directory ID is
-necessary to fetch all of user&#39;s data as all further data is encoded as meta-information
+store it. It will be retrieved when the user logs into their account. Root directory ID is
+necessary to fetch all of the user&#39;s data as all further data is encoded as meta-information
 into the Root Directory or one of its subdirectories.</p>
 </div><h4 id='method.get_user_root_directory_id' class='method'><code>fn <a href='#method.get_user_root_directory_id' class='fnname'>get_user_root_directory_id</a>(&amp;self) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;&amp;<a class='struct' href='../../../xor_name/struct.XorName.html' title='xor_name::XorName'>XorName</a>&gt;</code></h4>
 <div class='docblock'><p>Get User&#39;s Root Directory ID if available in session packet used for current login</p>
 </div><h4 id='method.set_configuration_root_directory_id' class='method'><code>fn <a href='#method.set_configuration_root_directory_id' class='fnname'>set_configuration_root_directory_id</a>(&amp;mut self, root_dir_id: <a class='struct' href='../../../xor_name/struct.XorName.html' title='xor_name::XorName'>XorName</a>) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>()</a>, <a class='enum' href='../../../safe_core/core/errors/enum.CoreError.html' title='safe_core::core::errors::CoreError'>CoreError</a>&gt;</code></h4>
 <div class='docblock'><p>Create an entry for the Maidsafe configuration specific Root Directory ID into the
-session packet, encrypt and store it. It will be retireved when the user logs into
-his account. Root directory ID is necessary to fetch all of configuration data as all further
-data is encoded as meta-information into the config Root Directory or one of its subdirectories.</p>
+session packet, encrypt and store it. It will be retrieved when the user logs into
+their account. Root directory ID is necessary to fetch all of configuration data as all
+further data is encoded as meta-information into the config Root Directory or one of its
+subdirectories.</p>
 </div><h4 id='method.get_configuration_root_directory_id' class='method'><code>fn <a href='#method.get_configuration_root_directory_id' class='fnname'>get_configuration_root_directory_id</a>(&amp;self) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;&amp;<a class='struct' href='../../../xor_name/struct.XorName.html' title='xor_name::XorName'>XorName</a>&gt;</code></h4>
 <div class='docblock'><p>Get Maidsafe specific configuration&#39;s Root Directory ID if available in session packet used
 for current login</p>
