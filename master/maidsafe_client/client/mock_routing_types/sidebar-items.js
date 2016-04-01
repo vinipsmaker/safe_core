@@ -1,1 +1,0 @@
-initSidebarItems({"constant":[["MAX_STRUCTURED_DATA_SIZE_IN_BYTES",""]],"enum":[["Data",""],["DataRequest",""],["ImmutableDataType",""]],"struct":[["ImmutableData",""],["StructuredData",""]]});
