@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-88ac128001ac3a9a/routing-0.19.0/src/node.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-88ac128001ac3a9a/routing-0.19.1/src/node.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>node.rs.html -- source</title>
@@ -563,7 +563,7 @@
         <span class='kw'>let</span> <span class='ident'>role</span> <span class='op'>=</span> <span class='kw'>if</span> <span class='ident'>first_node</span> {
             <span class='ident'>Role</span>::<span class='ident'>FirstNode</span>
         } <span class='kw'>else</span> {
-            <span class='ident'>Role</span>::<span class='ident'>RoutingNode</span>
+            <span class='ident'>Role</span>::<span class='ident'>Node</span>
         };
         <span class='comment'>// start the handler for routing without a restriction to become a full node</span>
         <span class='kw'>let</span> (<span class='ident'>action_sender</span>, <span class='kw-2'>mut</span> <span class='ident'>core</span>) <span class='op'>=</span> <span class='ident'>Core</span>::<span class='ident'>new</span>(<span class='ident'>event_sender</span>, <span class='ident'>role</span>, <span class='prelude-val'>None</span>, <span class='ident'>use_data_cache</span>);
@@ -592,7 +592,7 @@
         <span class='kw'>let</span> <span class='ident'>role</span> <span class='op'>=</span> <span class='kw'>if</span> <span class='ident'>first_node</span> {
             <span class='ident'>Role</span>::<span class='ident'>FirstNode</span>
         } <span class='kw'>else</span> {
-            <span class='ident'>Role</span>::<span class='ident'>RoutingNode</span>
+            <span class='ident'>Role</span>::<span class='ident'>Node</span>
         };
         <span class='comment'>// start the handler for routing without a restriction to become a full node</span>
         <span class='kw'>let</span> (<span class='ident'>action_sender</span>, <span class='ident'>core</span>) <span class='op'>=</span> <span class='ident'>Core</span>::<span class='ident'>new</span>(<span class='ident'>event_sender</span>, <span class='ident'>role</span>, <span class='prelude-val'>None</span>, <span class='ident'>use_data_cache</span>);
