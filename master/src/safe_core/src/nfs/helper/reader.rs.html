@@ -105,6 +105,7 @@
 <span id="62">62</span>
 <span id="63">63</span>
 <span id="64">64</span>
+<span id="65">65</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2015 MaidSafe.net limited.</span>
 <span class='comment'>//</span>
@@ -128,7 +129,7 @@
 <span class='kw'>use</span> <span class='ident'>nfs</span>::<span class='ident'>errors</span>::<span class='ident'>NfsError</span>;
 <span class='kw'>use</span> <span class='ident'>nfs</span>::<span class='ident'>file</span>::<span class='ident'>File</span>;
 <span class='kw'>use</span> <span class='ident'>core</span>::<span class='ident'>client</span>::<span class='ident'>Client</span>;
-<span class='kw'>use</span> <span class='ident'>core</span>::<span class='ident'>SelfEncryptionStorage</span>;
+<span class='kw'>use</span> <span class='ident'>core</span>::{<span class='ident'>SelfEncryptionStorage</span>, <span class='ident'>SelfEncryptionStorageError</span>};
 <span class='kw'>use</span> <span class='ident'>self_encryption</span>::<span class='ident'>SelfEncryptor</span>;
 
 <span class='doccomment'>/// Reader is used to read contents of a File. It can read in chunks if the file happens to be very</span>
@@ -136,20 +137,21 @@
 <span class='attribute'>#[<span class='ident'>allow</span>(<span class='ident'>dead_code</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>Reader</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> {
     <span class='ident'>client</span>: <span class='ident'>Arc</span><span class='op'>&lt;</span><span class='ident'>Mutex</span><span class='op'>&lt;</span><span class='ident'>Client</span><span class='op'>&gt;&gt;</span>,
-    <span class='ident'>self_encryptor</span>: <span class='ident'>SelfEncryptor</span><span class='op'>&lt;</span><span class='ident'>SelfEncryptionStorage</span><span class='op'>&gt;</span>,
+    <span class='ident'>self_encryptor</span>: <span class='ident'>SelfEncryptor</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>SelfEncryptionStorageError</span>, <span class='ident'>SelfEncryptionStorage</span><span class='op'>&gt;</span>,
     <span class='ident'>file</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='ident'>File</span>,
 }
 
 <span class='kw'>impl</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> <span class='ident'>Reader</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> {
     <span class='doccomment'>/// Create a new instance of Reader</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>(<span class='ident'>client</span>: <span class='ident'>Arc</span><span class='op'>&lt;</span><span class='ident'>Mutex</span><span class='op'>&lt;</span><span class='ident'>Client</span><span class='op'>&gt;&gt;</span>, <span class='ident'>file</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='ident'>File</span>) <span class='op'>-&gt;</span> <span class='ident'>Reader</span> {
-        <span class='kw'>let</span> <span class='ident'>se_storage</span> <span class='op'>=</span> <span class='ident'>SelfEncryptionStorage</span>::<span class='ident'>new</span>(<span class='ident'>client</span>.<span class='ident'>clone</span>());
-
-        <span class='ident'>Reader</span> {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>(<span class='ident'>client</span>: <span class='ident'>Arc</span><span class='op'>&lt;</span><span class='ident'>Mutex</span><span class='op'>&lt;</span><span class='ident'>Client</span><span class='op'>&gt;&gt;</span>,
+               <span class='ident'>storage</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='kw-2'>mut</span> <span class='ident'>SelfEncryptionStorage</span>,
+               <span class='ident'>file</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='ident'>File</span>)
+               <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>Reader</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span>, <span class='ident'>NfsError</span><span class='op'>&gt;</span> {
+        <span class='prelude-val'>Ok</span>(<span class='ident'>Reader</span> {
             <span class='ident'>client</span>: <span class='ident'>client</span>.<span class='ident'>clone</span>(),
-            <span class='ident'>self_encryptor</span>: <span class='ident'>SelfEncryptor</span>::<span class='ident'>new</span>(<span class='ident'>se_storage</span>, <span class='ident'>file</span>.<span class='ident'>get_datamap</span>().<span class='ident'>clone</span>()),
+            <span class='ident'>self_encryptor</span>: <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>SelfEncryptor</span>::<span class='ident'>new</span>(<span class='ident'>storage</span>, <span class='ident'>file</span>.<span class='ident'>get_datamap</span>().<span class='ident'>clone</span>())),
             <span class='ident'>file</span>: <span class='ident'>file</span>,
-        }
+        })
     }
 
     <span class='doccomment'>/// Returns the total size of the file/blob</span>
@@ -166,7 +168,7 @@
             <span class='macro'>debug</span><span class='macro'>!</span>(<span class='string'>&quot;Reading {len} bytes of data from file starting at offset of {pos} bytes ...&quot;</span>,
                    <span class='ident'>len</span> <span class='op'>=</span> <span class='ident'>length</span>,
                    <span class='ident'>pos</span> <span class='op'>=</span> <span class='ident'>position</span>);
-            <span class='prelude-val'>Ok</span>(<span class='self'>self</span>.<span class='ident'>self_encryptor</span>.<span class='ident'>read</span>(<span class='ident'>position</span>, <span class='ident'>length</span>))
+            <span class='prelude-val'>Ok</span>(<span class='macro'>try</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>self_encryptor</span>.<span class='ident'>read</span>(<span class='ident'>position</span>, <span class='ident'>length</span>)))
         }
     }
 }

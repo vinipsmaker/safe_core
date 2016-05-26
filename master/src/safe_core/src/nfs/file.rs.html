@@ -163,11 +163,11 @@
 
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>fmt</span>;
 
-<span class='kw'>use</span> <span class='ident'>core</span>::<span class='ident'>utility</span>;
 <span class='kw'>use</span> <span class='ident'>nfs</span>::<span class='ident'>errors</span>::<span class='ident'>NfsError</span>;
 <span class='kw'>use</span> <span class='ident'>nfs</span>::<span class='ident'>metadata</span>::<span class='ident'>file_metadata</span>::<span class='ident'>FileMetadata</span>;
 
-<span class='kw'>use</span> <span class='ident'>xor_name</span>::<span class='ident'>XorName</span>;
+<span class='kw'>use</span> <span class='ident'>rand</span>::{<span class='ident'>Rand</span>, <span class='ident'>OsRng</span>};
+<span class='kw'>use</span> <span class='ident'>routing</span>::<span class='ident'>XorName</span>;
 <span class='kw'>use</span> <span class='ident'>self_encryption</span>::<span class='ident'>DataMap</span>;
 
 <span class='doccomment'>/// Representation of a File to be put into the network. Could be text, music, video etc any kind</span>
@@ -183,7 +183,7 @@
     <span class='doccomment'>/// Create a new instance of File</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>(<span class='ident'>metadata</span>: <span class='ident'>FileMetadata</span>, <span class='ident'>datamap</span>: <span class='ident'>DataMap</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>File</span>, <span class='ident'>NfsError</span><span class='op'>&gt;</span> {
         <span class='prelude-val'>Ok</span>(<span class='ident'>File</span> {
-            <span class='ident'>id</span>: <span class='ident'>XorName</span>::<span class='ident'>new</span>(<span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>utility</span>::<span class='ident'>generate_random_array_u8_64</span>())),
+            <span class='ident'>id</span>: <span class='ident'>Rand</span>::<span class='ident'>rand</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>OsRng</span>::<span class='ident'>new</span>().<span class='ident'>expect</span>(<span class='string'>&quot;Failed to create OsRng.&quot;</span>)),
             <span class='ident'>metadata</span>: <span class='ident'>metadata</span>,
             <span class='ident'>datamap</span>: <span class='ident'>datamap</span>,
         })

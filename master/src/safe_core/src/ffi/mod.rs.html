@@ -608,8 +608,6 @@
 <span id="565">565</span>
 <span id="566">566</span>
 <span id="567">567</span>
-<span id="568">568</span>
-<span id="569">569</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2015 MaidSafe.net limited.</span>
 <span class='comment'>//</span>
@@ -980,25 +978,23 @@
 {
 
     <span class='kw'>let</span> <span class='ident'>module</span>: <span class='ident'>String</span> <span class='op'>=</span>
-        <span class='macro'>try</span><span class='macro'>!</span>(<span class='macro'>parse_result</span><span class='macro'>!</span>(<span class='ident'>json_decoder</span>.<span class='ident'>read_struct_field</span>(<span class='string'>&quot;module&quot;</span>, <span class='number'>0</span>, <span class='op'>|</span><span class='ident'>d</span><span class='op'>|</span> <span class='ident'>Decodable</span>::<span class='ident'>decode</span>(<span class='ident'>d</span>)),
+        <span class='macro'>try</span><span class='macro'>!</span>(<span class='macro'>parse_result</span><span class='macro'>!</span>(<span class='ident'>json_decoder</span>.<span class='ident'>read_struct_field</span>(<span class='string'>&quot;module&quot;</span>, <span class='number'>0</span>, <span class='ident'>Decodable</span>::<span class='ident'>decode</span>),
                            <span class='string'>&quot;&quot;</span>));
     <span class='kw'>let</span> <span class='ident'>action</span>: <span class='ident'>String</span> <span class='op'>=</span>
-        <span class='macro'>try</span><span class='macro'>!</span>(<span class='macro'>parse_result</span><span class='macro'>!</span>(<span class='ident'>json_decoder</span>.<span class='ident'>read_struct_field</span>(<span class='string'>&quot;action&quot;</span>, <span class='number'>1</span>, <span class='op'>|</span><span class='ident'>d</span><span class='op'>|</span> <span class='ident'>Decodable</span>::<span class='ident'>decode</span>(<span class='ident'>d</span>)),
+        <span class='macro'>try</span><span class='macro'>!</span>(<span class='macro'>parse_result</span><span class='macro'>!</span>(<span class='ident'>json_decoder</span>.<span class='ident'>read_struct_field</span>(<span class='string'>&quot;action&quot;</span>, <span class='number'>1</span>, <span class='ident'>Decodable</span>::<span class='ident'>decode</span>),
                            <span class='string'>&quot;&quot;</span>));
     <span class='kw'>let</span> <span class='ident'>base64_safe_drive_dir_key</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>String</span><span class='op'>&gt;</span> <span class='op'>=</span>
-        <span class='ident'>json_decoder</span>.<span class='ident'>read_struct_field</span>(<span class='string'>&quot;safe_drive_dir_key&quot;</span>, <span class='number'>2</span>, <span class='op'>|</span><span class='ident'>d</span><span class='op'>|</span> <span class='ident'>Decodable</span>::<span class='ident'>decode</span>(<span class='ident'>d</span>))
+        <span class='ident'>json_decoder</span>.<span class='ident'>read_struct_field</span>(<span class='string'>&quot;safe_drive_dir_key&quot;</span>, <span class='number'>2</span>, <span class='ident'>Decodable</span>::<span class='ident'>decode</span>)
             .<span class='ident'>ok</span>();
 
     <span class='kw'>let</span> <span class='ident'>base64_app_dir_key</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>String</span><span class='op'>&gt;</span> <span class='op'>=</span>
-        <span class='ident'>json_decoder</span>.<span class='ident'>read_struct_field</span>(<span class='string'>&quot;app_dir_key&quot;</span>, <span class='number'>3</span>, <span class='op'>|</span><span class='ident'>d</span><span class='op'>|</span> <span class='ident'>Decodable</span>::<span class='ident'>decode</span>(<span class='ident'>d</span>))
+        <span class='ident'>json_decoder</span>.<span class='ident'>read_struct_field</span>(<span class='string'>&quot;app_dir_key&quot;</span>, <span class='number'>3</span>, <span class='ident'>Decodable</span>::<span class='ident'>decode</span>)
             .<span class='ident'>ok</span>();
     <span class='kw'>let</span> <span class='ident'>safe_drive_access</span>: <span class='ident'>bool</span> <span class='op'>=</span> <span class='kw'>if</span> <span class='ident'>base64_safe_drive_dir_key</span>.<span class='ident'>is_none</span>() {
         <span class='boolval'>false</span>
     } <span class='kw'>else</span> {
-        <span class='macro'>try</span><span class='macro'>!</span>(<span class='macro'>parse_result</span><span class='macro'>!</span>(<span class='ident'>json_decoder</span>.<span class='ident'>read_struct_field</span>(<span class='string'>&quot;safe_drive_access&quot;</span>,
-                                                          <span class='number'>4</span>,
-                                                          <span class='op'>|</span><span class='ident'>d</span><span class='op'>|</span> <span class='ident'>Decodable</span>::<span class='ident'>decode</span>(<span class='ident'>d</span>)),
-                           <span class='string'>&quot;&quot;</span>))
+        <span class='macro'>try</span><span class='macro'>!</span>(<span class='macro'>parse_result</span><span class='macro'>!</span>(
+                <span class='ident'>json_decoder</span>.<span class='ident'>read_struct_field</span>(<span class='string'>&quot;safe_drive_access&quot;</span>, <span class='number'>4</span>, <span class='ident'>Decodable</span>::<span class='ident'>decode</span>), <span class='string'>&quot;&quot;</span>))
     };
     <span class='kw'>let</span> <span class='ident'>app_root_dir_key</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>DirectoryKey</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='kw'>if</span> <span class='kw'>let</span> <span class='prelude-val'>Some</span>(<span class='ident'>app_dir_key</span>) <span class='op'>=</span> <span class='ident'>base64_app_dir_key</span> {
         <span class='kw'>let</span> <span class='ident'>serialised_app_dir_key</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>u8</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='macro'>parse_result</span><span class='macro'>!</span>(<span class='ident'>app_dir_key</span>[..].<span class='ident'>from_base64</span>(),

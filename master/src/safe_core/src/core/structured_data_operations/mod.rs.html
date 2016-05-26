@@ -260,6 +260,27 @@
 <span id="217">217</span>
 <span id="218">218</span>
 <span id="219">219</span>
+<span id="220">220</span>
+<span id="221">221</span>
+<span id="222">222</span>
+<span id="223">223</span>
+<span id="224">224</span>
+<span id="225">225</span>
+<span id="226">226</span>
+<span id="227">227</span>
+<span id="228">228</span>
+<span id="229">229</span>
+<span id="230">230</span>
+<span id="231">231</span>
+<span id="232">232</span>
+<span id="233">233</span>
+<span id="234">234</span>
+<span id="235">235</span>
+<span id="236">236</span>
+<span id="237">237</span>
+<span id="238">238</span>
+<span id="239">239</span>
+<span id="240">240</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2015 MaidSafe.net limited.</span>
 <span class='comment'>//</span>
@@ -283,10 +304,10 @@
 <span class='doccomment'>/// Versioned-Structured Data</span>
 <span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>versioned</span>;
 
-<span class='kw'>use</span> <span class='ident'>xor_name</span>::<span class='ident'>XorName</span>;
 <span class='kw'>use</span> <span class='ident'>core</span>::<span class='ident'>errors</span>::<span class='ident'>CoreError</span>;
-<span class='kw'>use</span> <span class='ident'>routing</span>::<span class='ident'>StructuredData</span>;
+<span class='kw'>use</span> <span class='ident'>routing</span>::{<span class='ident'>StructuredData</span>, <span class='ident'>XorName</span>, <span class='ident'>XOR_NAME_LEN</span>};
 <span class='kw'>use</span> <span class='ident'>sodiumoxide</span>::<span class='ident'>crypto</span>::<span class='ident'>sign</span>;
+<span class='kw'>use</span> <span class='ident'>std</span>::{<span class='ident'>u8</span>, <span class='ident'>u64</span>};
 <span class='kw'>use</span> <span class='ident'>maidsafe_utilities</span>::<span class='ident'>serialisation</span>::<span class='ident'>serialise</span>;
 
 <span class='kw'>const</span> <span class='ident'>PADDING_SIZE_IN_BYTES</span>: <span class='ident'>usize</span> <span class='op'>=</span> <span class='number'>1024</span>;
@@ -314,19 +335,20 @@
         <span class='ident'>prev_owner_keys</span>.<span class='ident'>len</span>()
     };
 
-    <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>structured_data</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>StructuredData</span>::<span class='ident'>new</span>(::<span class='ident'>std</span>::<span class='ident'>u64</span>::<span class='ident'>MAX</span>,
-                                                       <span class='ident'>XorName</span>::<span class='ident'>new</span>([::<span class='ident'>std</span>::<span class='ident'>u8</span>::<span class='ident'>MAX</span>; <span class='number'>64</span>]),
-                                                       ::<span class='ident'>std</span>::<span class='ident'>u64</span>::<span class='ident'>MAX</span>,
+    <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>structured_data</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>StructuredData</span>::<span class='ident'>new</span>(<span class='ident'>u64</span>::<span class='ident'>MAX</span>,
+                                                       <span class='ident'>XorName</span>([<span class='ident'>u8</span>::<span class='ident'>MAX</span>; <span class='ident'>XOR_NAME_LEN</span>]),
+                                                       <span class='ident'>u64</span>::<span class='ident'>MAX</span>,
                                                        <span class='ident'>Vec</span>::<span class='ident'>new</span>(),
                                                        <span class='ident'>owner_keys</span>,
                                                        <span class='ident'>prev_owner_keys</span>,
                                                        <span class='prelude-val'>None</span>));
 
     <span class='comment'>// Fill it with rest of signatures</span>
-    <span class='ident'>structured_data</span>.<span class='ident'>replace_signatures</span>(<span class='macro'>vec</span><span class='macro'>!</span>[<span class='ident'>sign</span>::<span class='ident'>Signature</span>([::<span class='ident'>std</span>::<span class='ident'>u8</span>::<span class='ident'>MAX</span>; <span class='ident'>sign</span>::<span class='ident'>SIGNATUREBYTES</span>]);
-                                            <span class='ident'>max_signatures_possible</span>]);
+    <span class='ident'>structured_data</span>.<span class='ident'>replace_signatures</span>(
+        <span class='macro'>vec</span><span class='macro'>!</span>[<span class='ident'>sign</span>::<span class='ident'>Signature</span>([<span class='ident'>u8</span>::<span class='ident'>MAX</span>; <span class='ident'>sign</span>::<span class='ident'>SIGNATUREBYTES</span>]); <span class='ident'>max_signatures_possible</span>]);
 
-    <span class='kw'>let</span> <span class='ident'>serialised_structured_data_len</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>serialise</span>(<span class='kw-2'>&amp;</span><span class='ident'>structured_data</span>)).<span class='ident'>len</span>() <span class='op'>+</span> <span class='ident'>PADDING_SIZE_IN_BYTES</span>;
+    <span class='kw'>let</span> <span class='ident'>serialised_structured_data_len</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>serialise</span>(<span class='kw-2'>&amp;</span><span class='ident'>structured_data</span>)).<span class='ident'>len</span>() <span class='op'>+</span>
+                                         <span class='ident'>PADDING_SIZE_IN_BYTES</span>;
     <span class='kw'>if</span> ::<span class='ident'>routing</span>::<span class='ident'>MAX_STRUCTURED_DATA_SIZE_IN_BYTES</span> <span class='op'>&lt;=</span> <span class='ident'>serialised_structured_data_len</span> {
         <span class='prelude-val'>Ok</span>(<span class='number'>0</span>)
     } <span class='kw'>else</span> {
@@ -359,7 +381,7 @@
     <span class='kw'>use</span> <span class='ident'>core</span>::<span class='ident'>utility</span>::<span class='ident'>test_utils</span>;
 
     <span class='comment'>// Refers the fixed size of the get_approximate_space_for_data fn without signatures</span>
-    <span class='kw'>const</span> <span class='ident'>DEFAULT_FIXED_SIZE</span>: <span class='ident'>usize</span> <span class='op'>=</span> ::<span class='ident'>routing</span>::<span class='ident'>MAX_STRUCTURED_DATA_SIZE_IN_BYTES</span> <span class='op'>-</span> <span class='number'>1144</span>;
+    <span class='kw'>const</span> <span class='ident'>DEFAULT_FIXED_SIZE</span>: <span class='ident'>usize</span> <span class='op'>=</span> ::<span class='ident'>routing</span>::<span class='ident'>MAX_STRUCTURED_DATA_SIZE_IN_BYTES</span> <span class='op'>-</span> <span class='number'>1112</span>;
     <span class='comment'>// 112 is the size of a signature after serialisation.</span>
     <span class='kw'>const</span> <span class='ident'>FIXED_SIZE_OF_SIGNATURE</span>: <span class='ident'>usize</span> <span class='op'>=</span> <span class='number'>112</span>;
 
@@ -374,7 +396,8 @@
             <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='macro'>unwrap_result</span><span class='macro'>!</span>(<span class='ident'>get_approximate_space_for_data</span>(<span class='ident'>keys</span>.<span class='ident'>clone</span>(), <span class='ident'>Vec</span>::<span class='ident'>new</span>())),
                        <span class='ident'>DEFAULT_FIXED_SIZE</span> <span class='op'>-</span> (<span class='ident'>FIXED_SIZE_OF_SIGNATURE</span> <span class='op'>*</span> <span class='ident'>keys</span>.<span class='ident'>len</span>()));
             <span class='ident'>keys</span>.<span class='ident'>extend</span>(<span class='ident'>test_utils</span>::<span class='ident'>get_max_sized_public_keys</span>(<span class='number'>902</span>)); <span class='comment'>// 904 keys Max</span>
-            <span class='kw'>let</span> <span class='ident'>max_used_space</span> <span class='op'>=</span> <span class='macro'>unwrap_result</span><span class='macro'>!</span>(<span class='ident'>get_approximate_space_for_data</span>(<span class='ident'>keys</span>.<span class='ident'>clone</span>(), <span class='ident'>Vec</span>::<span class='ident'>new</span>()));
+            <span class='kw'>let</span> <span class='ident'>max_used_space</span> <span class='op'>=</span> <span class='macro'>unwrap_result</span><span class='macro'>!</span>(<span class='ident'>get_approximate_space_for_data</span>(<span class='ident'>keys</span>.<span class='ident'>clone</span>(),
+                                                                               <span class='ident'>Vec</span>::<span class='ident'>new</span>()));
             <span class='macro'>assert</span><span class='macro'>!</span>((<span class='ident'>max_used_space</span> <span class='op'>&lt;</span> <span class='ident'>FIXED_SIZE_OF_SIGNATURE</span>) <span class='op'>&amp;&amp;</span> (<span class='ident'>max_used_space</span> <span class='op'>&gt;</span> <span class='number'>0</span>));
             <span class='ident'>keys</span>.<span class='ident'>extend</span>(<span class='ident'>test_utils</span>::<span class='ident'>get_max_sized_public_keys</span>(<span class='number'>1</span>));
             <span class='macro'>assert</span><span class='macro'>!</span>(<span class='macro'>unwrap_result</span><span class='macro'>!</span>(<span class='ident'>get_approximate_space_for_data</span>(<span class='ident'>keys</span>.<span class='ident'>clone</span>(), <span class='ident'>Vec</span>::<span class='ident'>new</span>())) <span class='op'>==</span> <span class='number'>0</span>);
@@ -382,17 +405,19 @@
         <span class='comment'>// Random key assertions</span>
         {
             <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>keys</span> <span class='op'>=</span> <span class='ident'>test_utils</span>::<span class='ident'>generate_public_keys</span>(<span class='number'>10</span>);
-            <span class='macro'>assert</span><span class='macro'>!</span>(<span class='macro'>unwrap_result</span><span class='macro'>!</span>(<span class='ident'>get_approximate_space_for_data</span>(<span class='ident'>keys</span>.<span class='ident'>clone</span>(), <span class='ident'>Vec</span>::<span class='ident'>new</span>())) <span class='op'>&gt;</span> <span class='number'>5000</span>);
-            <span class='macro'>assert</span><span class='macro'>!</span>(<span class='macro'>unwrap_result</span><span class='macro'>!</span>(<span class='ident'>get_approximate_space_for_data</span>(<span class='ident'>test_utils</span>::<span class='ident'>generate_public_keys</span>(<span class='number'>1</span>),
-                                                                  <span class='ident'>keys</span>.<span class='ident'>clone</span>())) <span class='op'>&gt;</span> <span class='number'>5000</span>);
+            <span class='macro'>assert</span><span class='macro'>!</span>(<span class='macro'>unwrap_result</span><span class='macro'>!</span>(<span class='ident'>get_approximate_space_for_data</span>(<span class='ident'>keys</span>.<span class='ident'>clone</span>(), <span class='ident'>Vec</span>::<span class='ident'>new</span>())) <span class='op'>&gt;</span>
+                    <span class='number'>5000</span>);
+            <span class='macro'>assert</span><span class='macro'>!</span>(<span class='macro'>unwrap_result</span><span class='macro'>!</span>(<span class='ident'>get_approximate_space_for_data</span>(
+                <span class='ident'>test_utils</span>::<span class='ident'>generate_public_keys</span>(<span class='number'>1</span>), <span class='ident'>keys</span>.<span class='ident'>clone</span>())) <span class='op'>&gt;</span> <span class='number'>5000</span>);
             <span class='ident'>keys</span>.<span class='ident'>extend</span>(<span class='ident'>test_utils</span>::<span class='ident'>generate_public_keys</span>(<span class='number'>40</span>)); <span class='comment'>// 50 keys</span>
-            <span class='macro'>assert</span><span class='macro'>!</span>(<span class='macro'>unwrap_result</span><span class='macro'>!</span>(<span class='ident'>get_approximate_space_for_data</span>(<span class='ident'>keys</span>.<span class='ident'>clone</span>(), <span class='ident'>Vec</span>::<span class='ident'>new</span>())) <span class='op'>&gt;</span> <span class='number'>5000</span>);
-            <span class='macro'>assert</span><span class='macro'>!</span>(<span class='macro'>unwrap_result</span><span class='macro'>!</span>(<span class='ident'>get_approximate_space_for_data</span>(<span class='ident'>test_utils</span>::<span class='ident'>generate_public_keys</span>(<span class='number'>1</span>),
-                                                                  <span class='ident'>keys</span>.<span class='ident'>clone</span>())) <span class='op'>&gt;</span> <span class='number'>5000</span>);
+            <span class='macro'>assert</span><span class='macro'>!</span>(<span class='macro'>unwrap_result</span><span class='macro'>!</span>(<span class='ident'>get_approximate_space_for_data</span>(<span class='ident'>keys</span>.<span class='ident'>clone</span>(), <span class='ident'>Vec</span>::<span class='ident'>new</span>())) <span class='op'>&gt;</span>
+                    <span class='number'>5000</span>);
+            <span class='macro'>assert</span><span class='macro'>!</span>(<span class='macro'>unwrap_result</span><span class='macro'>!</span>(<span class='ident'>get_approximate_space_for_data</span>(
+                <span class='ident'>test_utils</span>::<span class='ident'>generate_public_keys</span>(<span class='number'>1</span>), <span class='ident'>keys</span>.<span class='ident'>clone</span>())) <span class='op'>&gt;</span> <span class='number'>5000</span>);
             <span class='ident'>keys</span>.<span class='ident'>extend</span>(<span class='ident'>test_utils</span>::<span class='ident'>generate_public_keys</span>(<span class='number'>850</span>)); <span class='comment'>// 900 keys</span>
             <span class='macro'>assert</span><span class='macro'>!</span>(<span class='macro'>unwrap_result</span><span class='macro'>!</span>(<span class='ident'>get_approximate_space_for_data</span>(<span class='ident'>keys</span>.<span class='ident'>clone</span>(), <span class='ident'>Vec</span>::<span class='ident'>new</span>())) <span class='op'>&gt;</span> <span class='number'>100</span>);
-            <span class='macro'>assert</span><span class='macro'>!</span>(<span class='macro'>unwrap_result</span><span class='macro'>!</span>(<span class='ident'>get_approximate_space_for_data</span>(<span class='ident'>test_utils</span>::<span class='ident'>generate_public_keys</span>(<span class='number'>1</span>),
-                                                                  <span class='ident'>keys</span>.<span class='ident'>clone</span>())) <span class='op'>&gt;</span> <span class='number'>100</span>);
+            <span class='macro'>assert</span><span class='macro'>!</span>(<span class='macro'>unwrap_result</span><span class='macro'>!</span>(<span class='ident'>get_approximate_space_for_data</span>(
+                <span class='ident'>test_utils</span>::<span class='ident'>generate_public_keys</span>(<span class='number'>1</span>), <span class='ident'>keys</span>.<span class='ident'>clone</span>())) <span class='op'>&gt;</span> <span class='number'>100</span>);
         }
     }
 
@@ -404,9 +429,9 @@
         {
             <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>keys</span> <span class='op'>=</span> <span class='ident'>test_utils</span>::<span class='ident'>get_max_sized_public_keys</span>(<span class='number'>1</span>);
             <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>DataFitResult</span>::<span class='ident'>DataFits</span>,
-                       <span class='macro'>unwrap_result</span><span class='macro'>!</span>(<span class='ident'>check_if_data_can_fit_in_structured_data</span>(<span class='kw-2'>&amp;</span><span class='ident'>Vec</span>::<span class='ident'>with_capacity</span>(<span class='number'>0</span>),
-                                                                               <span class='ident'>keys</span>.<span class='ident'>clone</span>(),
-                                                                               <span class='ident'>Vec</span>::<span class='ident'>new</span>())));
+                <span class='macro'>unwrap_result</span><span class='macro'>!</span>(<span class='ident'>check_if_data_can_fit_in_structured_data</span>(<span class='kw-2'>&amp;</span><span class='ident'>Vec</span>::<span class='ident'>with_capacity</span>(<span class='number'>0</span>),
+                                                                        <span class='ident'>keys</span>.<span class='ident'>clone</span>(),
+                                                                        <span class='ident'>Vec</span>::<span class='ident'>new</span>())));
             <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>DataFitResult</span>::<span class='ident'>DataDoesNotFit</span>,
                        <span class='macro'>unwrap_result</span><span class='macro'>!</span>(<span class='ident'>check_if_data_can_fit_in_structured_data</span>(<span class='kw-2'>&amp;</span><span class='macro'>vec</span><span class='macro'>!</span>[<span class='number'>1u8</span>; <span class='number'>102400</span>],
                                                                                <span class='ident'>keys</span>.<span class='ident'>clone</span>(),
@@ -417,66 +442,83 @@
                                                                                <span class='ident'>Vec</span>::<span class='ident'>new</span>())));
             <span class='ident'>keys</span>.<span class='ident'>extend</span>(<span class='ident'>test_utils</span>::<span class='ident'>get_max_sized_public_keys</span>(<span class='number'>902</span>));
             <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>DataFitResult</span>::<span class='ident'>DataFits</span>,
-                       <span class='macro'>unwrap_result</span><span class='macro'>!</span>(<span class='ident'>check_if_data_can_fit_in_structured_data</span>(<span class='kw-2'>&amp;</span><span class='ident'>Vec</span>::<span class='ident'>with_capacity</span>(<span class='number'>0</span>),
-                                                                               <span class='ident'>keys</span>.<span class='ident'>clone</span>(),
-                                                                               <span class='ident'>Vec</span>::<span class='ident'>new</span>())));
+                 <span class='macro'>unwrap_result</span><span class='macro'>!</span>(<span class='ident'>check_if_data_can_fit_in_structured_data</span>(<span class='kw-2'>&amp;</span><span class='ident'>Vec</span>::<span class='ident'>with_capacity</span>(<span class='number'>0</span>),
+                                                                         <span class='ident'>keys</span>.<span class='ident'>clone</span>(),
+                                                                         <span class='ident'>Vec</span>::<span class='ident'>new</span>())));
             <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>DataFitResult</span>::<span class='ident'>DataDoesNotFit</span>,
                        <span class='macro'>unwrap_result</span><span class='macro'>!</span>(<span class='ident'>check_if_data_can_fit_in_structured_data</span>(<span class='kw-2'>&amp;</span><span class='macro'>vec</span><span class='macro'>!</span>[<span class='number'>0u8</span>; <span class='number'>102400</span>],
                                                                                <span class='ident'>keys</span>.<span class='ident'>clone</span>(),
                                                                                <span class='ident'>Vec</span>::<span class='ident'>new</span>())));
             <span class='ident'>keys</span>.<span class='ident'>extend</span>(<span class='ident'>test_utils</span>::<span class='ident'>get_max_sized_public_keys</span>(<span class='number'>1</span>));
             <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>DataFitResult</span>::<span class='ident'>NoDataCanFit</span>,
-                       <span class='macro'>unwrap_result</span><span class='macro'>!</span>(<span class='ident'>check_if_data_can_fit_in_structured_data</span>(<span class='kw-2'>&amp;</span><span class='ident'>Vec</span>::<span class='ident'>with_capacity</span>(<span class='number'>0</span>),
-                                                                               <span class='ident'>keys</span>.<span class='ident'>clone</span>(),
-                                                                               <span class='ident'>Vec</span>::<span class='ident'>new</span>())));
+                 <span class='macro'>unwrap_result</span><span class='macro'>!</span>(<span class='ident'>check_if_data_can_fit_in_structured_data</span>(<span class='kw-2'>&amp;</span><span class='ident'>Vec</span>::<span class='ident'>with_capacity</span>(<span class='number'>0</span>),
+                                                                         <span class='ident'>keys</span>.<span class='ident'>clone</span>(),
+                                                                         <span class='ident'>Vec</span>::<span class='ident'>new</span>())));
         }
         <span class='comment'>// Empty data</span>
         {
             <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>keys</span> <span class='op'>=</span> <span class='ident'>test_utils</span>::<span class='ident'>generate_public_keys</span>(<span class='number'>250</span>);
             <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>DataFitResult</span>::<span class='ident'>DataFits</span>,
-                       <span class='macro'>unwrap_result</span><span class='macro'>!</span>(<span class='ident'>check_if_data_can_fit_in_structured_data</span>(<span class='kw-2'>&amp;</span><span class='ident'>Vec</span>::<span class='ident'>new</span>(), <span class='ident'>keys</span>.<span class='ident'>clone</span>(), <span class='ident'>Vec</span>::<span class='ident'>new</span>())));
-            <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>DataFitResult</span>::<span class='ident'>DataFits</span>,
                        <span class='macro'>unwrap_result</span><span class='macro'>!</span>(<span class='ident'>check_if_data_can_fit_in_structured_data</span>(<span class='kw-2'>&amp;</span><span class='ident'>Vec</span>::<span class='ident'>new</span>(),
-                                                                               <span class='ident'>test_utils</span>::<span class='ident'>generate_public_keys</span>(<span class='number'>1</span>),
-                                                                               <span class='ident'>keys</span>.<span class='ident'>clone</span>())));
+                                                                               <span class='ident'>keys</span>.<span class='ident'>clone</span>(),
+                                                                               <span class='ident'>Vec</span>::<span class='ident'>new</span>())));
+            <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>DataFitResult</span>::<span class='ident'>DataFits</span>,
+                       <span class='macro'>unwrap_result</span><span class='macro'>!</span>(<span class='ident'>check_if_data_can_fit_in_structured_data</span>(
+                           <span class='kw-2'>&amp;</span><span class='ident'>Vec</span>::<span class='ident'>new</span>(),
+                           <span class='ident'>test_utils</span>::<span class='ident'>generate_public_keys</span>(<span class='number'>1</span>),
+                           <span class='ident'>keys</span>.<span class='ident'>clone</span>())));
             <span class='ident'>keys</span>.<span class='ident'>extend</span>(<span class='ident'>test_utils</span>::<span class='ident'>generate_public_keys</span>(<span class='number'>750</span>));
             <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>DataFitResult</span>::<span class='ident'>NoDataCanFit</span>,
-                       <span class='macro'>unwrap_result</span><span class='macro'>!</span>(<span class='ident'>check_if_data_can_fit_in_structured_data</span>(<span class='kw-2'>&amp;</span><span class='ident'>Vec</span>::<span class='ident'>new</span>(), <span class='ident'>keys</span>, <span class='ident'>Vec</span>::<span class='ident'>new</span>())));
+                       <span class='macro'>unwrap_result</span><span class='macro'>!</span>(<span class='ident'>check_if_data_can_fit_in_structured_data</span>(<span class='kw-2'>&amp;</span><span class='ident'>Vec</span>::<span class='ident'>new</span>(),
+                                                                               <span class='ident'>keys</span>,
+                                                                               <span class='ident'>Vec</span>::<span class='ident'>new</span>())));
         }
         <span class='comment'>// Data of size 80kb</span>
         {
             <span class='kw'>let</span> <span class='ident'>data</span> <span class='op'>=</span> <span class='macro'>vec</span><span class='macro'>!</span>[<span class='number'>99u8</span>; <span class='number'>1024</span> <span class='op'>*</span> <span class='number'>80</span>];
             <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>keys</span> <span class='op'>=</span> <span class='ident'>test_utils</span>::<span class='ident'>generate_public_keys</span>(<span class='number'>1</span>);
             <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>DataFitResult</span>::<span class='ident'>DataFits</span>,
-                       <span class='macro'>unwrap_result</span><span class='macro'>!</span>(<span class='ident'>check_if_data_can_fit_in_structured_data</span>(<span class='kw-2'>&amp;</span><span class='ident'>data</span>, <span class='ident'>keys</span>.<span class='ident'>clone</span>(), <span class='ident'>Vec</span>::<span class='ident'>new</span>())));
+                       <span class='macro'>unwrap_result</span><span class='macro'>!</span>(<span class='ident'>check_if_data_can_fit_in_structured_data</span>(<span class='kw-2'>&amp;</span><span class='ident'>data</span>,
+                                                                               <span class='ident'>keys</span>.<span class='ident'>clone</span>(),
+                                                                               <span class='ident'>Vec</span>::<span class='ident'>new</span>())));
             <span class='ident'>keys</span>.<span class='ident'>extend</span>(<span class='ident'>test_utils</span>::<span class='ident'>generate_public_keys</span>(<span class='number'>98</span>));
             <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>DataFitResult</span>::<span class='ident'>DataFits</span>,
-                       <span class='macro'>unwrap_result</span><span class='macro'>!</span>(<span class='ident'>check_if_data_can_fit_in_structured_data</span>(<span class='kw-2'>&amp;</span><span class='ident'>data</span>, <span class='ident'>keys</span>.<span class='ident'>clone</span>(), <span class='ident'>Vec</span>::<span class='ident'>new</span>())));
+                       <span class='macro'>unwrap_result</span><span class='macro'>!</span>(<span class='ident'>check_if_data_can_fit_in_structured_data</span>(<span class='kw-2'>&amp;</span><span class='ident'>data</span>,
+                                                                               <span class='ident'>keys</span>.<span class='ident'>clone</span>(),
+                                                                               <span class='ident'>Vec</span>::<span class='ident'>new</span>())));
             <span class='ident'>keys</span>.<span class='ident'>extend</span>(<span class='ident'>test_utils</span>::<span class='ident'>generate_public_keys</span>(<span class='number'>190</span>));
             <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>DataFitResult</span>::<span class='ident'>DataDoesNotFit</span>,
-                       <span class='macro'>unwrap_result</span><span class='macro'>!</span>(<span class='ident'>check_if_data_can_fit_in_structured_data</span>(<span class='kw-2'>&amp;</span><span class='ident'>data</span>, <span class='ident'>keys</span>.<span class='ident'>clone</span>(), <span class='ident'>Vec</span>::<span class='ident'>new</span>())));
+                       <span class='macro'>unwrap_result</span><span class='macro'>!</span>(<span class='ident'>check_if_data_can_fit_in_structured_data</span>(<span class='kw-2'>&amp;</span><span class='ident'>data</span>,
+                                                                               <span class='ident'>keys</span>.<span class='ident'>clone</span>(),
+                                                                               <span class='ident'>Vec</span>::<span class='ident'>new</span>())));
             <span class='ident'>keys</span>.<span class='ident'>extend</span>(<span class='ident'>test_utils</span>::<span class='ident'>generate_public_keys</span>(<span class='number'>610</span>));
             <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>DataFitResult</span>::<span class='ident'>DataDoesNotFit</span>,
-                       <span class='macro'>unwrap_result</span><span class='macro'>!</span>(<span class='ident'>check_if_data_can_fit_in_structured_data</span>(<span class='kw-2'>&amp;</span><span class='ident'>data</span>, <span class='ident'>keys</span>.<span class='ident'>clone</span>(), <span class='ident'>Vec</span>::<span class='ident'>new</span>())));
+                       <span class='macro'>unwrap_result</span><span class='macro'>!</span>(<span class='ident'>check_if_data_can_fit_in_structured_data</span>(<span class='kw-2'>&amp;</span><span class='ident'>data</span>,
+                                                                               <span class='ident'>keys</span>.<span class='ident'>clone</span>(),
+                                                                               <span class='ident'>Vec</span>::<span class='ident'>new</span>())));
             <span class='ident'>keys</span>.<span class='ident'>extend</span>(<span class='ident'>test_utils</span>::<span class='ident'>generate_public_keys</span>(<span class='number'>15</span>));
             <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>DataFitResult</span>::<span class='ident'>NoDataCanFit</span>,
-                       <span class='macro'>unwrap_result</span><span class='macro'>!</span>(<span class='ident'>check_if_data_can_fit_in_structured_data</span>(<span class='kw-2'>&amp;</span><span class='ident'>data</span>, <span class='ident'>keys</span>, <span class='ident'>Vec</span>::<span class='ident'>new</span>())));
+                       <span class='macro'>unwrap_result</span><span class='macro'>!</span>(<span class='ident'>check_if_data_can_fit_in_structured_data</span>(<span class='kw-2'>&amp;</span><span class='ident'>data</span>,
+                                                                               <span class='ident'>keys</span>,
+                                                                               <span class='ident'>Vec</span>::<span class='ident'>new</span>())));
         }
         <span class='comment'>// Data size of 100 kb</span>
         {
             <span class='kw'>let</span> <span class='ident'>data</span> <span class='op'>=</span> <span class='macro'>vec</span><span class='macro'>!</span>[<span class='number'>1u8</span>; <span class='number'>102400</span>];
             <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>DataFitResult</span>::<span class='ident'>DataDoesNotFit</span>,
-                       <span class='macro'>unwrap_result</span><span class='macro'>!</span>(<span class='ident'>check_if_data_can_fit_in_structured_data</span>(<span class='kw-2'>&amp;</span><span class='ident'>data</span>,
-                                                                               <span class='ident'>test_utils</span>::<span class='ident'>generate_public_keys</span>(<span class='number'>1</span>),
-                                                                               <span class='ident'>Vec</span>::<span class='ident'>new</span>())));
+                       <span class='macro'>unwrap_result</span><span class='macro'>!</span>(<span class='ident'>check_if_data_can_fit_in_structured_data</span>(
+                           <span class='kw-2'>&amp;</span><span class='ident'>data</span>,
+                           <span class='ident'>test_utils</span>::<span class='ident'>generate_public_keys</span>(<span class='number'>1</span>),
+                           <span class='ident'>Vec</span>::<span class='ident'>new</span>())));
         }
         <span class='comment'>// Data size of 101 kb</span>
         {
             <span class='kw'>let</span> <span class='ident'>data</span> <span class='op'>=</span> <span class='macro'>vec</span><span class='macro'>!</span>[<span class='number'>1u8</span>; <span class='number'>103424</span>];
             <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>DataFitResult</span>::<span class='ident'>DataDoesNotFit</span>,
-                       <span class='macro'>unwrap_result</span><span class='macro'>!</span>(<span class='ident'>check_if_data_can_fit_in_structured_data</span>(<span class='kw-2'>&amp;</span><span class='ident'>data</span>,
-                                                                               <span class='ident'>test_utils</span>::<span class='ident'>generate_public_keys</span>(<span class='number'>1</span>),
-                                                                               <span class='ident'>Vec</span>::<span class='ident'>new</span>())));
+                       <span class='macro'>unwrap_result</span><span class='macro'>!</span>(<span class='ident'>check_if_data_can_fit_in_structured_data</span>(
+                           <span class='kw-2'>&amp;</span><span class='ident'>data</span>,
+                           <span class='ident'>test_utils</span>::<span class='ident'>generate_public_keys</span>(<span class='number'>1</span>),
+                           <span class='ident'>Vec</span>::<span class='ident'>new</span>())));
         }
     }
 }

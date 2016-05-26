@@ -301,11 +301,11 @@
 
 <span class='kw'>use</span> <span class='ident'>rustc_serialize</span>::{<span class='ident'>Decodable</span>, <span class='ident'>Decoder</span>};
 
-<span class='kw'>use</span> <span class='ident'>xor_name</span>::<span class='ident'>XorName</span>;
+<span class='kw'>use</span> <span class='ident'>rand</span>::{<span class='ident'>Rand</span>, <span class='ident'>OsRng</span>};
+<span class='kw'>use</span> <span class='ident'>routing</span>::<span class='ident'>XorName</span>;
 <span class='kw'>use</span> <span class='ident'>nfs</span>::<span class='ident'>metadata</span>::<span class='ident'>directory_key</span>::<span class='ident'>DirectoryKey</span>;
 <span class='kw'>use</span> <span class='ident'>nfs</span>::<span class='ident'>AccessLevel</span>;
 <span class='kw'>use</span> <span class='ident'>nfs</span>::<span class='ident'>errors</span>::<span class='ident'>NfsError</span>;
-<span class='kw'>use</span> <span class='ident'>core</span>::<span class='ident'>utility</span>;
 
 <span class='doccomment'>/// Metadata about a File or a Directory</span>
 <span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Debug</span>, <span class='ident'>PartialEq</span>, <span class='ident'>Eq</span>, <span class='ident'>PartialOrd</span>, <span class='ident'>Ord</span>, <span class='ident'>Clone</span>)]</span>
@@ -327,7 +327,7 @@
                <span class='ident'>user_metadata</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>u8</span><span class='op'>&gt;</span>,
                <span class='ident'>parent_dir_key</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>DirectoryKey</span><span class='op'>&gt;</span>)
                <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>DirectoryMetadata</span>, <span class='ident'>NfsError</span><span class='op'>&gt;</span> {
-        <span class='kw'>let</span> <span class='ident'>id</span> <span class='op'>=</span> <span class='ident'>XorName</span>::<span class='ident'>new</span>(<span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>utility</span>::<span class='ident'>generate_random_array_u8_64</span>()));
+        <span class='kw'>let</span> <span class='ident'>id</span> <span class='op'>=</span> <span class='ident'>Rand</span>::<span class='ident'>rand</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>OsRng</span>::<span class='ident'>new</span>().<span class='ident'>expect</span>(<span class='string'>&quot;Failed to create OsRng.&quot;</span>));
         <span class='prelude-val'>Ok</span>(<span class='ident'>DirectoryMetadata</span> {
             <span class='ident'>key</span>: <span class='ident'>DirectoryKey</span>::<span class='ident'>new</span>(<span class='ident'>id</span>, <span class='ident'>type_tag</span>, <span class='ident'>versioned</span>, <span class='ident'>access_level</span>),
             <span class='ident'>name</span>: <span class='ident'>name</span>,
@@ -440,18 +440,18 @@
     <span class='kw'>fn</span> <span class='ident'>decode</span><span class='op'>&lt;</span><span class='ident'>D</span>: <span class='ident'>Decoder</span><span class='op'>&gt;</span>(<span class='ident'>d</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>D</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>DirectoryMetadata</span>, <span class='ident'>D</span>::<span class='ident'>Error</span><span class='op'>&gt;</span> {
         <span class='ident'>d</span>.<span class='ident'>read_struct</span>(<span class='string'>&quot;DirectoryMetadata&quot;</span>, <span class='number'>8</span>, <span class='op'>|</span><span class='ident'>d</span><span class='op'>|</span> {
             <span class='prelude-val'>Ok</span>(<span class='ident'>DirectoryMetadata</span> {
-                <span class='ident'>key</span>: <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>d</span>.<span class='ident'>read_struct_field</span>(<span class='string'>&quot;key&quot;</span>, <span class='number'>0</span>, <span class='op'>|</span><span class='ident'>d</span><span class='op'>|</span> <span class='ident'>Decodable</span>::<span class='ident'>decode</span>(<span class='ident'>d</span>))),
-                <span class='ident'>name</span>: <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>d</span>.<span class='ident'>read_struct_field</span>(<span class='string'>&quot;name&quot;</span>, <span class='number'>1</span>, <span class='op'>|</span><span class='ident'>d</span><span class='op'>|</span> <span class='ident'>Decodable</span>::<span class='ident'>decode</span>(<span class='ident'>d</span>))),
+                <span class='ident'>key</span>: <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>d</span>.<span class='ident'>read_struct_field</span>(<span class='string'>&quot;key&quot;</span>, <span class='number'>0</span>, <span class='ident'>Decodable</span>::<span class='ident'>decode</span>)),
+                <span class='ident'>name</span>: <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>d</span>.<span class='ident'>read_struct_field</span>(<span class='string'>&quot;name&quot;</span>, <span class='number'>1</span>, <span class='ident'>Decodable</span>::<span class='ident'>decode</span>)),
                 <span class='ident'>created_time</span>: ::<span class='ident'>time</span>::<span class='ident'>at_utc</span>(::<span class='ident'>time</span>::<span class='ident'>Timespec</span> {
-                    <span class='ident'>sec</span>: <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>d</span>.<span class='ident'>read_struct_field</span>(<span class='string'>&quot;created_time_sec&quot;</span>, <span class='number'>2</span>, <span class='op'>|</span><span class='ident'>d</span><span class='op'>|</span> <span class='ident'>Decodable</span>::<span class='ident'>decode</span>(<span class='ident'>d</span>))),
-                    <span class='ident'>nsec</span>: <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>d</span>.<span class='ident'>read_struct_field</span>(<span class='string'>&quot;created_time_nsec&quot;</span>, <span class='number'>3</span>, <span class='op'>|</span><span class='ident'>d</span><span class='op'>|</span> <span class='ident'>Decodable</span>::<span class='ident'>decode</span>(<span class='ident'>d</span>))),
+                    <span class='ident'>sec</span>: <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>d</span>.<span class='ident'>read_struct_field</span>(<span class='string'>&quot;created_time_sec&quot;</span>, <span class='number'>2</span>, <span class='ident'>Decodable</span>::<span class='ident'>decode</span>)),
+                    <span class='ident'>nsec</span>: <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>d</span>.<span class='ident'>read_struct_field</span>(<span class='string'>&quot;created_time_nsec&quot;</span>, <span class='number'>3</span>, <span class='ident'>Decodable</span>::<span class='ident'>decode</span>)),
                 }),
                 <span class='ident'>modified_time</span>: ::<span class='ident'>time</span>::<span class='ident'>at_utc</span>(::<span class='ident'>time</span>::<span class='ident'>Timespec</span> {
-                    <span class='ident'>sec</span>: <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>d</span>.<span class='ident'>read_struct_field</span>(<span class='string'>&quot;modified_time_sec&quot;</span>, <span class='number'>4</span>, <span class='op'>|</span><span class='ident'>d</span><span class='op'>|</span> <span class='ident'>Decodable</span>::<span class='ident'>decode</span>(<span class='ident'>d</span>))),
-                    <span class='ident'>nsec</span>: <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>d</span>.<span class='ident'>read_struct_field</span>(<span class='string'>&quot;modified_time_nsec&quot;</span>, <span class='number'>5</span>, <span class='op'>|</span><span class='ident'>d</span><span class='op'>|</span> <span class='ident'>Decodable</span>::<span class='ident'>decode</span>(<span class='ident'>d</span>))),
+                    <span class='ident'>sec</span>: <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>d</span>.<span class='ident'>read_struct_field</span>(<span class='string'>&quot;modified_time_sec&quot;</span>, <span class='number'>4</span>, <span class='ident'>Decodable</span>::<span class='ident'>decode</span>)),
+                    <span class='ident'>nsec</span>: <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>d</span>.<span class='ident'>read_struct_field</span>(<span class='string'>&quot;modified_time_nsec&quot;</span>, <span class='number'>5</span>, <span class='ident'>Decodable</span>::<span class='ident'>decode</span>)),
                 }),
-                <span class='ident'>user_metadata</span>: <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>d</span>.<span class='ident'>read_struct_field</span>(<span class='string'>&quot;user_metadata&quot;</span>, <span class='number'>6</span>, <span class='op'>|</span><span class='ident'>d</span><span class='op'>|</span> <span class='ident'>Decodable</span>::<span class='ident'>decode</span>(<span class='ident'>d</span>))),
-                <span class='ident'>parent_dir_key</span>: <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>d</span>.<span class='ident'>read_struct_field</span>(<span class='string'>&quot;parent_dir_key&quot;</span>, <span class='number'>7</span>, <span class='op'>|</span><span class='ident'>d</span><span class='op'>|</span> <span class='ident'>Decodable</span>::<span class='ident'>decode</span>(<span class='ident'>d</span>))),
+                <span class='ident'>user_metadata</span>: <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>d</span>.<span class='ident'>read_struct_field</span>(<span class='string'>&quot;user_metadata&quot;</span>, <span class='number'>6</span>, <span class='ident'>Decodable</span>::<span class='ident'>decode</span>)),
+                <span class='ident'>parent_dir_key</span>: <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>d</span>.<span class='ident'>read_struct_field</span>(<span class='string'>&quot;parent_dir_key&quot;</span>, <span class='number'>7</span>, <span class='ident'>Decodable</span>::<span class='ident'>decode</span>)),
             })
         })
     }
@@ -460,10 +460,10 @@
 <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>test</span>)]</span>
 <span class='kw'>mod</span> <span class='ident'>test</span> {
     <span class='kw'>use</span> <span class='ident'>super</span>::<span class='op'>*</span>;
-    <span class='kw'>use</span> <span class='ident'>xor_name</span>::<span class='ident'>XorName</span>;
+    <span class='kw'>use</span> <span class='ident'>rand</span>;
+    <span class='kw'>use</span> <span class='ident'>routing</span>::<span class='ident'>XorName</span>;
     <span class='kw'>use</span> <span class='ident'>nfs</span>::<span class='ident'>metadata</span>::<span class='ident'>directory_key</span>::<span class='ident'>DirectoryKey</span>;
     <span class='kw'>use</span> <span class='ident'>maidsafe_utilities</span>::<span class='ident'>serialisation</span>::{<span class='ident'>serialise</span>, <span class='ident'>deserialise</span>};
-    <span class='kw'>use</span> <span class='ident'>core</span>::<span class='ident'>utility</span>;
     <span class='kw'>use</span> <span class='ident'>nfs</span>::<span class='ident'>AccessLevel</span>;
 
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
@@ -481,7 +481,7 @@
 
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>serialise_directorty_metadata_with_parent_directory</span>() {
-        <span class='kw'>let</span> <span class='ident'>id</span> <span class='op'>=</span> <span class='ident'>XorName</span>::<span class='ident'>new</span>(<span class='macro'>unwrap_result</span><span class='macro'>!</span>((<span class='ident'>utility</span>::<span class='ident'>generate_random_array_u8_64</span>())));
+        <span class='kw'>let</span> <span class='ident'>id</span>: <span class='ident'>XorName</span> <span class='op'>=</span> <span class='ident'>rand</span>::<span class='ident'>random</span>();
         <span class='kw'>let</span> <span class='ident'>parent_directory</span> <span class='op'>=</span> <span class='ident'>DirectoryKey</span>::<span class='ident'>new</span>(<span class='ident'>id</span>, <span class='number'>100u64</span>, <span class='boolval'>false</span>, <span class='ident'>AccessLevel</span>::<span class='ident'>Private</span>);
         <span class='kw'>let</span> <span class='ident'>obj_before</span> <span class='op'>=</span> <span class='macro'>unwrap_result</span><span class='macro'>!</span>(<span class='ident'>DirectoryMetadata</span>::<span class='ident'>new</span>(<span class='string'>&quot;hello.txt&quot;</span>.<span class='ident'>to_string</span>(),
                                                                <span class='number'>99u64</span>,
@@ -500,17 +500,17 @@
 
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>update_using_setters</span>() {
-        <span class='kw'>let</span> <span class='ident'>id</span> <span class='op'>=</span> <span class='ident'>XorName</span>::<span class='ident'>new</span>(<span class='macro'>unwrap_result</span><span class='macro'>!</span>((<span class='ident'>utility</span>::<span class='ident'>generate_random_array_u8_64</span>())));
+        <span class='kw'>let</span> <span class='ident'>id</span>: <span class='ident'>XorName</span> <span class='op'>=</span> <span class='ident'>rand</span>::<span class='ident'>random</span>();
         <span class='kw'>let</span> <span class='ident'>modified_time</span> <span class='op'>=</span> ::<span class='ident'>time</span>::<span class='ident'>now_utc</span>();
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>obj_before</span> <span class='op'>=</span> <span class='macro'>unwrap_result</span><span class='macro'>!</span>(<span class='ident'>DirectoryMetadata</span>::<span class='ident'>new</span>(<span class='string'>&quot;hello.txt&quot;</span>.<span class='ident'>to_string</span>(),
-                                                                   <span class='number'>99u64</span>,
-                                                                   <span class='boolval'>true</span>,
-                                                                   <span class='ident'>AccessLevel</span>::<span class='ident'>Private</span>,
-                                                                   <span class='ident'>Vec</span>::<span class='ident'>new</span>(),
-                                                                   <span class='prelude-val'>Some</span>(<span class='ident'>DirectoryKey</span>::<span class='ident'>new</span>(<span class='ident'>id</span>,
-                                                                                          <span class='number'>100u64</span>,
-                                                                                          <span class='boolval'>false</span>,
-                                                                                          <span class='ident'>AccessLevel</span>::<span class='ident'>Private</span>))));
+                                                  <span class='number'>99u64</span>,
+                                                  <span class='boolval'>true</span>,
+                                                  <span class='ident'>AccessLevel</span>::<span class='ident'>Private</span>,
+                                                  <span class='ident'>Vec</span>::<span class='ident'>new</span>(),
+                                                  <span class='prelude-val'>Some</span>(<span class='ident'>DirectoryKey</span>::<span class='ident'>new</span>(<span class='ident'>id</span>,
+                                                                         <span class='number'>100u64</span>,
+                                                                         <span class='boolval'>false</span>,
+                                                                         <span class='ident'>AccessLevel</span>::<span class='ident'>Private</span>))));
         <span class='kw'>let</span> <span class='ident'>user_metadata</span> <span class='op'>=</span> <span class='string'>&quot;{mime: \&quot;application/json\&quot;}&quot;</span>.<span class='ident'>to_string</span>().<span class='ident'>into_bytes</span>();
         <span class='ident'>obj_before</span>.<span class='ident'>set_user_metadata</span>(<span class='ident'>user_metadata</span>.<span class='ident'>clone</span>());
         <span class='ident'>obj_before</span>.<span class='ident'>set_modified_time</span>(<span class='ident'>modified_time</span>.<span class='ident'>clone</span>());

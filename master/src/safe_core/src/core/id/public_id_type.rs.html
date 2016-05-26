@@ -259,9 +259,9 @@
 <span class='comment'>// Please review the Licences for the specific language governing permissions and limitations</span>
 <span class='comment'>// relating to use of the SAFE Network Software.</span>
 
-<span class='kw'>use</span> <span class='ident'>xor_name</span>::<span class='ident'>XorName</span>;
+<span class='kw'>use</span> <span class='ident'>routing</span>::<span class='ident'>XorName</span>;
 <span class='kw'>use</span> <span class='ident'>sodiumoxide</span>::<span class='ident'>crypto</span>::{<span class='ident'>box_</span>, <span class='ident'>sign</span>};
-<span class='kw'>use</span> <span class='ident'>sodiumoxide</span>::<span class='ident'>crypto</span>::<span class='ident'>hash</span>::<span class='ident'>sha512</span>;
+<span class='kw'>use</span> <span class='ident'>sodiumoxide</span>::<span class='ident'>crypto</span>::<span class='ident'>hash</span>::<span class='ident'>sha256</span>;
 <span class='kw'>use</span> <span class='ident'>core</span>::<span class='ident'>id</span>::{<span class='ident'>IdType</span>, <span class='ident'>RevocationIdType</span>};
 
 <span class='doccomment'>/// PublicIdType</span>
@@ -290,12 +290,12 @@
         <span class='kw'>let</span> <span class='ident'>public_keys</span> <span class='op'>=</span> <span class='ident'>id_type</span>.<span class='ident'>public_keys</span>().<span class='ident'>clone</span>();
         <span class='kw'>let</span> <span class='ident'>revocation_public_key</span> <span class='op'>=</span> <span class='ident'>revocation_id</span>.<span class='ident'>public_key</span>();
         <span class='kw'>let</span> <span class='ident'>combined_iter</span> <span class='op'>=</span> (<span class='ident'>public_keys</span>.<span class='number'>0</span>)
-                                .<span class='number'>0</span>
-                                .<span class='ident'>into_iter</span>()
-                                .<span class='ident'>chain</span>((<span class='ident'>public_keys</span>.<span class='number'>1</span>)
-                                           .<span class='number'>0</span>
-                                           .<span class='ident'>into_iter</span>()
-                                           .<span class='ident'>chain</span>(<span class='ident'>revocation_public_key</span>.<span class='number'>0</span>.<span class='ident'>into_iter</span>()));
+            .<span class='number'>0</span>
+            .<span class='ident'>into_iter</span>()
+            .<span class='ident'>chain</span>((<span class='ident'>public_keys</span>.<span class='number'>1</span>)
+                .<span class='number'>0</span>
+                .<span class='ident'>into_iter</span>()
+                .<span class='ident'>chain</span>(<span class='ident'>revocation_public_key</span>.<span class='number'>0</span>.<span class='ident'>into_iter</span>()));
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>combined</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>u8</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>Vec</span>::<span class='ident'>new</span>();
         <span class='kw'>for</span> <span class='ident'>iter</span> <span class='kw'>in</span> <span class='ident'>combined_iter</span> {
             <span class='ident'>combined</span>.<span class='ident'>push</span>(<span class='op'>*</span><span class='ident'>iter</span>);
@@ -306,9 +306,9 @@
         <span class='kw'>let</span> <span class='ident'>message_length</span> <span class='op'>=</span> <span class='ident'>combined</span>.<span class='ident'>len</span>();
 
         <span class='kw'>let</span> <span class='ident'>signature</span> <span class='op'>=</span> <span class='ident'>revocation_id</span>.<span class='ident'>sign</span>(<span class='kw-2'>&amp;</span><span class='ident'>combined</span>)
-                                     .<span class='ident'>into_iter</span>()
-                                     .<span class='ident'>skip</span>(<span class='ident'>message_length</span>)
-                                     .<span class='ident'>collect</span>::<span class='op'>&lt;</span><span class='ident'>Vec</span><span class='op'>&lt;</span>_<span class='op'>&gt;&gt;</span>();
+            .<span class='ident'>into_iter</span>()
+            .<span class='ident'>skip</span>(<span class='ident'>message_length</span>)
+            .<span class='ident'>collect</span>::<span class='op'>&lt;</span><span class='ident'>Vec</span><span class='op'>&lt;</span>_<span class='op'>&gt;&gt;</span>();
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>signature_arr</span> <span class='op'>=</span> [<span class='number'>0</span>; <span class='ident'>sign</span>::<span class='ident'>SIGNATUREBYTES</span>];
 
         <span class='kw'>for</span> <span class='ident'>it</span> <span class='kw'>in</span> <span class='ident'>signature</span>.<span class='ident'>into_iter</span>().<span class='ident'>take</span>(<span class='ident'>sign</span>::<span class='ident'>SIGNATUREBYTES</span>).<span class='ident'>enumerate</span>() {
@@ -326,9 +326,9 @@
     <span class='doccomment'>/// Returns the name</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>name</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>XorName</span> {
         <span class='kw'>let</span> <span class='ident'>combined_iter</span> <span class='op'>=</span> (<span class='self'>self</span>.<span class='ident'>public_keys</span>.<span class='number'>0</span>)
-                                .<span class='number'>0</span>
-                                .<span class='ident'>into_iter</span>()
-                                .<span class='ident'>chain</span>((<span class='self'>self</span>.<span class='ident'>public_keys</span>.<span class='number'>1</span>).<span class='number'>0</span>.<span class='ident'>into_iter</span>());
+            .<span class='number'>0</span>
+            .<span class='ident'>into_iter</span>()
+            .<span class='ident'>chain</span>((<span class='self'>self</span>.<span class='ident'>public_keys</span>.<span class='number'>1</span>).<span class='number'>0</span>.<span class='ident'>into_iter</span>());
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>combined</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>u8</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>Vec</span>::<span class='ident'>new</span>();
         <span class='kw'>for</span> <span class='ident'>iter</span> <span class='kw'>in</span> <span class='ident'>combined_iter</span> {
             <span class='ident'>combined</span>.<span class='ident'>push</span>(<span class='op'>*</span><span class='ident'>iter</span>);
@@ -339,7 +339,7 @@
         <span class='kw'>for</span> <span class='ident'>i</span> <span class='kw'>in</span> <span class='number'>0</span>..<span class='ident'>sign</span>::<span class='ident'>SIGNATUREBYTES</span> {
             <span class='ident'>combined</span>.<span class='ident'>push</span>(<span class='self'>self</span>.<span class='ident'>signature</span>.<span class='number'>0</span>[<span class='ident'>i</span>]);
         }
-        <span class='ident'>XorName</span>(<span class='ident'>sha512</span>::<span class='ident'>hash</span>(<span class='kw-2'>&amp;</span><span class='ident'>combined</span>).<span class='number'>0</span>)
+        <span class='ident'>XorName</span>(<span class='ident'>sha256</span>::<span class='ident'>hash</span>(<span class='kw-2'>&amp;</span><span class='ident'>combined</span>).<span class='number'>0</span>)
     }
 
     <span class='doccomment'>/// Returns the PublicKeys</span>
@@ -408,13 +408,13 @@
         <span class='kw'>let</span> <span class='ident'>public_id_keys</span> <span class='op'>=</span> <span class='ident'>public_maid</span>.<span class='ident'>public_keys</span>;
         <span class='kw'>let</span> <span class='ident'>public_revocation_key</span> <span class='op'>=</span> <span class='ident'>public_maid</span>.<span class='ident'>revocation_public_key</span>;
         <span class='kw'>let</span> <span class='ident'>combined_keys</span> <span class='op'>=</span> (<span class='ident'>public_id_keys</span>.<span class='number'>0</span>)
-                                .<span class='number'>0</span>
-                                .<span class='ident'>into_iter</span>()
-                                .<span class='ident'>chain</span>((<span class='ident'>public_id_keys</span>.<span class='number'>1</span>)
-                                           .<span class='number'>0</span>
-                                           .<span class='ident'>into_iter</span>()
-                                           .<span class='ident'>chain</span>(<span class='ident'>public_revocation_key</span>.<span class='number'>0</span>
-                                                                       .<span class='ident'>into_iter</span>()));
+            .<span class='number'>0</span>
+            .<span class='ident'>into_iter</span>()
+            .<span class='ident'>chain</span>((<span class='ident'>public_id_keys</span>.<span class='number'>1</span>)
+                .<span class='number'>0</span>
+                .<span class='ident'>into_iter</span>()
+                .<span class='ident'>chain</span>(<span class='ident'>public_revocation_key</span>.<span class='number'>0</span>
+                    .<span class='ident'>into_iter</span>()));
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>combined</span> <span class='op'>=</span> <span class='ident'>Vec</span>::<span class='ident'>new</span>();
 
         <span class='kw'>for</span> <span class='ident'>iter</span> <span class='kw'>in</span> <span class='ident'>combined_keys</span> {
@@ -426,9 +426,9 @@
 
         <span class='kw'>let</span> <span class='ident'>message_length</span> <span class='op'>=</span> <span class='ident'>combined</span>.<span class='ident'>len</span>();
         <span class='kw'>let</span> <span class='ident'>signature_vec</span> <span class='op'>=</span> <span class='ident'>revocation_maid</span>.<span class='ident'>sign</span>(<span class='kw-2'>&amp;</span><span class='ident'>combined</span>)
-                                           .<span class='ident'>into_iter</span>()
-                                           .<span class='ident'>skip</span>(<span class='ident'>message_length</span>)
-                                           .<span class='ident'>collect</span>::<span class='op'>&lt;</span><span class='ident'>Vec</span><span class='op'>&lt;</span>_<span class='op'>&gt;&gt;</span>();
+            .<span class='ident'>into_iter</span>()
+            .<span class='ident'>skip</span>(<span class='ident'>message_length</span>)
+            .<span class='ident'>collect</span>::<span class='op'>&lt;</span><span class='ident'>Vec</span><span class='op'>&lt;</span>_<span class='op'>&gt;&gt;</span>();
 
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>signature_vec</span>.<span class='ident'>len</span>(), <span class='ident'>sign</span>::<span class='ident'>SIGNATUREBYTES</span>);
 

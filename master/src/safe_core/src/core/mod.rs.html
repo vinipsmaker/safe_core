@@ -83,6 +83,9 @@
 <span id="40">40</span>
 <span id="41">41</span>
 <span id="42">42</span>
+<span id="43">43</span>
+<span id="44">44</span>
+<span id="45">45</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2015 MaidSafe.net limited.</span>
 <span class='comment'>//</span>
@@ -114,12 +117,15 @@
 <span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>translated_events</span>;
 <span class='doccomment'>/// Implements the Self Encryption storage trait</span>
 <span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>self_encryption_storage</span>;
+<span class='doccomment'>/// Implements the Self Encryption storage error trait</span>
+<span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>self_encryption_storage_error</span>;
 <span class='doccomment'>/// Helper functions to handle ImmutableData related operations</span>
 <span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>immut_data_operations</span>;
 <span class='doccomment'>/// Helper functions to handle StructuredData related operations</span>
 <span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>structured_data_operations</span>;
 
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>self_encryption_storage</span>::<span class='ident'>SelfEncryptionStorage</span>;
+<span class='kw'>pub</span> <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>self_encryption_storage_error</span>::<span class='ident'>SelfEncryptionStorageError</span>;
 
 <span class='doccomment'>/// All Maidsafe tagging should positive-offset from this</span>
 <span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>MAIDSAFE_TAG</span>: <span class='ident'>u64</span> <span class='op'>=</span> <span class='number'>5483_000</span>;
