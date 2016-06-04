@@ -11,6 +11,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../../main.css">
+    
 
     <link rel="shortcut icon" href="http://maidsafe.net/img/favicon.ico">
     
@@ -43,57 +44,52 @@
 
     <section id='main' class="content mod">
 <h1 class='fqn'><span class='in-band'>Module <a href='../../index.html'>safe_core</a>::<wbr><a href='../index.html'>core</a>::<wbr><a class='mod' href=''>utility</a></span><span class='out-of-band'><span id='render-detail'>
-            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
-                [<span class='inner'>&#x2212;</span>]
-            </a>
-        </span><a id='src-1573' class='srclink' href='../../../src/safe_core/src/core/utility/mod.rs.html#17-163' title='goto source code'>[src]</a></span></h1>
+                   <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                       [<span class='inner'>&#x2212;</span>]
+                   </a>
+               </span><a id='src-1573' class='srclink' href='../../../src/safe_core/src/core/utility/mod.rs.html#17-163' title='goto source code'>[src]</a></span></h1>
 <div class='docblock'><p>Utility functions</p>
 </div><h2 id='modules' class='section-header'><a href="#modules">Modules</a></h2>
 <table>
-                    <tr class=' module-item'>
-                        <td><a class='mod' href='test_utils/index.html'
-                               title='safe_core::core::utility::test_utils'>test_utils</a></td>
-                        <td class='docblock short'>
-                             <p>Common utility functions for writting test cases</p>
-                        </td>
-                    </tr>
-                </table><h2 id='functions' class='section-header'><a href="#functions">Functions</a></h2>
+                       <tr class=' module-item'>
+                           <td><a class='mod' href='test_utils/index.html'
+                                  title='safe_core::core::utility::test_utils'>test_utils</a></td>
+                           <td class='docblock short'>
+                                <p>Common utility functions for writting test cases</p>
+                           </td>
+                       </tr></table><h2 id='functions' class='section-header'><a href="#functions">Functions</a></h2>
 <table>
-                    <tr class=' module-item'>
-                        <td><a class='fn' href='fn.generate_random_string.html'
-                               title='safe_core::core::utility::generate_random_string'>generate_random_string</a></td>
-                        <td class='docblock short'>
-                             <p>Generates a random string for specified size</p>
-                        </td>
-                    </tr>
-                
-                    <tr class=' module-item'>
-                        <td><a class='fn' href='fn.generate_random_vector.html'
-                               title='safe_core::core::utility::generate_random_vector'>generate_random_vector</a></td>
-                        <td class='docblock short'>
-                             <p>Generate a random vector of given length</p>
-                        </td>
-                    </tr>
-                
-                    <tr class=' module-item'>
-                        <td><a class='fn' href='fn.hybrid_decrypt.html'
-                               title='safe_core::core::utility::hybrid_decrypt'>hybrid_decrypt</a></td>
-                        <td class='docblock short'>
-                             <p>Reverse of hybrid_encrypt. Refer hybrid_encrypt.</p>
-                        </td>
-                    </tr>
-                
-                    <tr class=' module-item'>
-                        <td><a class='fn' href='fn.hybrid_encrypt.html'
-                               title='safe_core::core::utility::hybrid_encrypt'>hybrid_encrypt</a></td>
-                        <td class='docblock short'>
-                             <p>Combined Asymmetric and Symmetric encryption. The data is encrypted using random Key and
+                       <tr class=' module-item'>
+                           <td><a class='fn' href='fn.generate_random_string.html'
+                                  title='safe_core::core::utility::generate_random_string'>generate_random_string</a></td>
+                           <td class='docblock short'>
+                                <p>Generates a random string for specified size</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='fn' href='fn.generate_random_vector.html'
+                                  title='safe_core::core::utility::generate_random_vector'>generate_random_vector</a></td>
+                           <td class='docblock short'>
+                                <p>Generate a random vector of given length</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='fn' href='fn.hybrid_decrypt.html'
+                                  title='safe_core::core::utility::hybrid_decrypt'>hybrid_decrypt</a></td>
+                           <td class='docblock short'>
+                                <p>Reverse of hybrid_encrypt. Refer hybrid_encrypt.</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='fn' href='fn.hybrid_encrypt.html'
+                                  title='safe_core::core::utility::hybrid_encrypt'>hybrid_encrypt</a></td>
+                           <td class='docblock short'>
+                                <p>Combined Asymmetric and Symmetric encryption. The data is encrypted using random Key and
 IV with Xsalsa-symmetric encryption. Random IV ensures that same plain text produces different
 cipher-texts for each fresh symmetric encryption. The Key and IV are then asymmetrically
 enrypted using Public-MAID and the whole thing is then serialised into a single Vec<u8>.</p>
-                        </td>
-                    </tr>
-                </table></section>
+                           </td>
+                       </tr></table></section>
     <section id='search' class="content hidden"></section>
 
     <section class="footer"></section>
