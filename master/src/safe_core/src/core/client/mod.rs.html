@@ -984,7 +984,7 @@
 
 <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>user_account</span>::<span class='ident'>Account</span>;
 <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>message_queue</span>::<span class='ident'>MessageQueue</span>;
-<span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>response_getter</span>::{<span class='ident'>MutationResponseGetter</span>, <span class='ident'>GetResponseGetter</span>};
+<span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>response_getter</span>::{<span class='ident'>GetResponseGetter</span>, <span class='ident'>MutationResponseGetter</span>};
 
 <span class='kw'>use</span> <span class='ident'>core</span>::<span class='ident'>utility</span>;
 <span class='kw'>use</span> <span class='ident'>core</span>::<span class='ident'>errors</span>::<span class='ident'>CoreError</span>;
@@ -994,7 +994,7 @@
 <span class='kw'>use</span> <span class='ident'>maidsafe_utilities</span>::<span class='ident'>serialisation</span>::<span class='ident'>serialise</span>;
 <span class='kw'>use</span> <span class='ident'>safe_network_common</span>::<span class='ident'>TYPE_TAG_SESSION_PACKET</span>;
 <span class='kw'>use</span> <span class='ident'>safe_network_common</span>::<span class='ident'>messaging</span>::{<span class='ident'>MpidMessage</span>, <span class='ident'>MpidMessageWrapper</span>};
-<span class='kw'>use</span> <span class='ident'>routing</span>::{<span class='ident'>MessageId</span>, <span class='ident'>FullId</span>, <span class='ident'>StructuredData</span>, <span class='ident'>Data</span>, <span class='ident'>DataIdentifier</span>, <span class='ident'>PlainData</span>, <span class='ident'>Authority</span>,
+<span class='kw'>use</span> <span class='ident'>routing</span>::{<span class='ident'>Authority</span>, <span class='ident'>Data</span>, <span class='ident'>DataIdentifier</span>, <span class='ident'>FullId</span>, <span class='ident'>MessageId</span>, <span class='ident'>PlainData</span>, <span class='ident'>StructuredData</span>,
               <span class='ident'>XorName</span>};
 
 <span class='kw'>use</span> <span class='ident'>sodiumoxide</span>::<span class='ident'>crypto</span>::{<span class='ident'>box_</span>, <span class='ident'>sign</span>};
@@ -1030,7 +1030,7 @@
         <span class='kw'>let</span> (<span class='ident'>routing_sender</span>, <span class='ident'>routing_receiver</span>) <span class='op'>=</span> <span class='ident'>mpsc</span>::<span class='ident'>channel</span>();
         <span class='kw'>let</span> (<span class='ident'>network_event_sender</span>, <span class='ident'>network_event_receiver</span>) <span class='op'>=</span> <span class='ident'>mpsc</span>::<span class='ident'>channel</span>();
 
-        <span class='kw'>let</span> <span class='ident'>routing</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>Routing</span>::<span class='ident'>new</span>(<span class='ident'>routing_sender</span>, <span class='prelude-val'>None</span>, <span class='boolval'>true</span>));
+        <span class='kw'>let</span> <span class='ident'>routing</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>Routing</span>::<span class='ident'>new</span>(<span class='ident'>routing_sender</span>, <span class='prelude-val'>None</span>));
         <span class='kw'>let</span> (<span class='ident'>message_queue</span>, <span class='ident'>raii_joiner</span>) <span class='op'>=</span> <span class='ident'>MessageQueue</span>::<span class='ident'>new</span>(<span class='ident'>routing_receiver</span>,
                                                              <span class='macro'>vec</span><span class='macro'>!</span>[<span class='ident'>network_event_sender</span>]);
 
@@ -1065,7 +1065,7 @@
         <span class='kw'>let</span> (<span class='ident'>routing_sender</span>, <span class='ident'>routing_receiver</span>) <span class='op'>=</span> <span class='ident'>mpsc</span>::<span class='ident'>channel</span>();
         <span class='kw'>let</span> (<span class='ident'>network_event_sender</span>, <span class='ident'>network_event_receiver</span>) <span class='op'>=</span> <span class='ident'>mpsc</span>::<span class='ident'>channel</span>();
 
-        <span class='kw'>let</span> <span class='ident'>routing</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>Routing</span>::<span class='ident'>new</span>(<span class='ident'>routing_sender</span>, <span class='prelude-val'>Some</span>(<span class='ident'>id_packet</span>), <span class='boolval'>true</span>));
+        <span class='kw'>let</span> <span class='ident'>routing</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>Routing</span>::<span class='ident'>new</span>(<span class='ident'>routing_sender</span>, <span class='prelude-val'>Some</span>(<span class='ident'>id_packet</span>)));
         <span class='kw'>let</span> (<span class='ident'>message_queue</span>, <span class='ident'>raii_joiner</span>) <span class='op'>=</span> <span class='ident'>MessageQueue</span>::<span class='ident'>new</span>(<span class='ident'>routing_receiver</span>,
                                                              <span class='macro'>vec</span><span class='macro'>!</span>[<span class='ident'>network_event_sender</span>]);
 
@@ -1146,7 +1146,7 @@
             <span class='kw'>let</span> (<span class='ident'>routing_sender</span>, <span class='ident'>routing_receiver</span>) <span class='op'>=</span> <span class='ident'>mpsc</span>::<span class='ident'>channel</span>();
             <span class='kw'>let</span> (<span class='ident'>network_event_sender</span>, <span class='ident'>network_event_receiver</span>) <span class='op'>=</span> <span class='ident'>mpsc</span>::<span class='ident'>channel</span>();
 
-            <span class='kw'>let</span> <span class='ident'>routing</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>Routing</span>::<span class='ident'>new</span>(<span class='ident'>routing_sender</span>, <span class='prelude-val'>Some</span>(<span class='ident'>id_packet</span>), <span class='boolval'>true</span>));
+            <span class='kw'>let</span> <span class='ident'>routing</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>Routing</span>::<span class='ident'>new</span>(<span class='ident'>routing_sender</span>, <span class='prelude-val'>Some</span>(<span class='ident'>id_packet</span>)));
             <span class='kw'>let</span> (<span class='ident'>message_queue</span>, <span class='ident'>raii_joiner</span>) <span class='op'>=</span> <span class='ident'>MessageQueue</span>::<span class='ident'>new</span>(<span class='ident'>routing_receiver</span>,
                                                                  <span class='macro'>vec</span><span class='macro'>!</span>[<span class='ident'>network_event_sender</span>]);
 
@@ -1582,7 +1582,7 @@
     <span class='kw'>use</span> <span class='ident'>core</span>::<span class='ident'>client</span>::<span class='ident'>response_getter</span>::<span class='ident'>GetResponseGetter</span>;
 
     <span class='kw'>use</span> <span class='ident'>rand</span>;
-    <span class='kw'>use</span> <span class='ident'>routing</span>::{<span class='ident'>ImmutableData</span>, <span class='ident'>DataIdentifier</span>, <span class='ident'>Data</span>, <span class='ident'>StructuredData</span>, <span class='ident'>XorName</span>, <span class='ident'>XOR_NAME_LEN</span>};
+    <span class='kw'>use</span> <span class='ident'>routing</span>::{<span class='ident'>Data</span>, <span class='ident'>DataIdentifier</span>, <span class='ident'>ImmutableData</span>, <span class='ident'>StructuredData</span>, <span class='ident'>XOR_NAME_LEN</span>, <span class='ident'>XorName</span>};
     <span class='kw'>use</span> <span class='ident'>safe_network_common</span>::<span class='ident'>client_errors</span>::<span class='ident'>MutationError</span>;
 
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
