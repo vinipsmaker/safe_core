@@ -52,11 +52,11 @@ impl AuthReq {
     ///
     /// You're now responsible for freeing the subobjects memory once you're
     /// done.
-    pub fn into_ffi(self) -> ffi::AuthReq {
+    pub fn into_repr_c(self) -> ffi::AuthReq {
         let AuthReq { app, app_container, containers } = self;
 
         let mut containers: Vec<_> = containers.into_iter()
-            .map(|c| c.into_raw())
+            .map(|c| c.into_repr_c())
             .collect();
 
         let c_ptr = containers.as_mut_ptr();
@@ -66,7 +66,7 @@ impl AuthReq {
         mem::forget(containers);
 
         ffi::AuthReq {
-            app: app.into_raw(),
+            app: app.into_repr_c(),
             app_container: app_container,
             containers: c_ptr,
             containers_len: c_len,
@@ -79,16 +79,16 @@ impl AuthReq {
     /// After calling this function, the subobjects memory is owned by the
     /// resulting object.
     #[allow(unsafe_code)]
-    pub unsafe fn from_ffi(raw: ffi::AuthReq) -> Self {
-        let app = AppExchangeInfo::from_raw(raw.app);
-        let containers =
-            Vec::from_raw_parts(raw.containers, raw.containers_len, raw.containers_cap)
-                .into_iter()
-                .map(|c| ContainerPermission::from_raw(c))
-                .collect();
+    pub unsafe fn from_repr_c(repr_c: ffi::AuthReq) -> Self {
+        let ffi::AuthReq { app, app_container, containers, containers_len, containers_cap } =
+            repr_c;
+        let containers = Vec::from_raw_parts(containers, containers_len, containers_cap)
+            .into_iter()
+            .map(|c| ContainerPermission::from_repr_c(c))
+            .collect();
         AuthReq {
-            app: app,
-            app_container: raw.app_container,
+            app: AppExchangeInfo::from_repr_c(app),
+            app_container: app_container,
             containers: containers,
         }
     }
@@ -120,7 +120,7 @@ impl AppExchangeInfo {
     /// Consumes the object and returns the wrapped raw pointer
     ///
     /// You're now responsible for freeing this memory once you're done.
-    pub fn into_raw(self) -> *mut ffi::AppExchangeInfo {
+    pub fn into_repr_c(self) -> ffi::AppExchangeInfo {
         let AppExchangeInfo { id, scope, name, vendor } = self;
 
         let id_ptr = id.as_ptr();
@@ -148,7 +148,7 @@ impl AppExchangeInfo {
 
         mem::forget(vendor);
 
-        Box::into_raw(Box::new(ffi::AppExchangeInfo {
+        ffi::AppExchangeInfo {
             id: id_ptr,
             id_len: id_len,
             id_cap: id_cap,
@@ -161,7 +161,7 @@ impl AppExchangeInfo {
             vendor: v_ptr,
             vendor_len: v_len,
             vendor_cap: v_cap,
-        }))
+        }
     }
 
     /// Constructs the object from a raw pointer.
@@ -169,8 +169,7 @@ impl AppExchangeInfo {
     /// After calling this function, the raw pointer is owned by the resulting
     /// object.
     #[allow(unsafe_code)]
-    pub unsafe fn from_raw(raw: *mut ffi::AppExchangeInfo) -> Self {
-        let raw = Box::from_raw(raw);
+    pub unsafe fn from_repr_c(raw: ffi::AppExchangeInfo) -> Self {
         let id = String::from_raw_parts(raw.id as *mut u8, raw.id_len, raw.id_cap);
         let scope = match (raw.scope, raw.scope_len, raw.scope_cap) {
             (p, _, _) if p.is_null() => None,
@@ -201,7 +200,7 @@ impl ContainerPermission {
     /// Consumes the object and returns the wrapped raw pointer
     ///
     /// You're now responsible for freeing this memory once you're done.
-    pub fn into_raw(self) -> *mut ffi::ContainerPermission {
+    pub fn into_repr_c(self) -> ffi::ContainerPermission {
         let ContainerPermission { container_key, mut access } = self;
 
         let ck_ptr = container_key.as_ptr();
@@ -216,14 +215,14 @@ impl ContainerPermission {
 
         mem::forget(access);
 
-        Box::into_raw(Box::new(ffi::ContainerPermission {
+        ffi::ContainerPermission {
             container_key: ck_ptr,
             container_key_len: ck_len,
             container_key_cap: ck_cap,
             access: a_ptr,
             access_len: a_len,
             access_cap: a_cap,
-        }))
+        }
     }
 
     /// Constructs the object from a raw pointer.
@@ -231,8 +230,7 @@ impl ContainerPermission {
     /// After calling this function, the raw pointer is owned by the resulting
     /// object.
     #[allow(unsafe_code)]
-    pub unsafe fn from_raw(raw: *mut ffi::ContainerPermission) -> Self {
-        let raw = Box::from_raw(raw);
+    pub unsafe fn from_repr_c(raw: ffi::ContainerPermission) -> Self {
         let ck = String::from_raw_parts(raw.container_key as *mut u8,
                                         raw.container_key_len,
                                         raw.container_key_cap);
@@ -255,22 +253,22 @@ mod tests {
             access: vec![],
         };
 
-        let raw_cp = cp.into_raw();
+        let ffi_cp = cp.into_repr_c();
 
         unsafe {
-            assert_eq!((*raw_cp).container_key_len, 6);
-            assert!((*raw_cp).container_key_cap >= 6);
-            assert_eq!(*(*raw_cp).container_key, 'f' as u8);
-            assert_eq!(*(*raw_cp).container_key.offset(1), 'o' as u8);
-            assert_eq!(*(*raw_cp).container_key.offset(2), 'o' as u8);
-            assert_eq!(*(*raw_cp).container_key.offset(3), 'b' as u8);
-            assert_eq!(*(*raw_cp).container_key.offset(4), 'a' as u8);
-            assert_eq!(*(*raw_cp).container_key.offset(5), 'r' as u8);
+            assert_eq!(ffi_cp.container_key_len, 6);
+            assert!(ffi_cp.container_key_cap >= 6);
+            assert_eq!(*ffi_cp.container_key, 'f' as u8);
+            assert_eq!(*ffi_cp.container_key.offset(1), 'o' as u8);
+            assert_eq!(*ffi_cp.container_key.offset(2), 'o' as u8);
+            assert_eq!(*ffi_cp.container_key.offset(3), 'b' as u8);
+            assert_eq!(*ffi_cp.container_key.offset(4), 'a' as u8);
+            assert_eq!(*ffi_cp.container_key.offset(5), 'r' as u8);
 
-            assert_eq!((*raw_cp).access_len, 0);
+            assert_eq!(ffi_cp.access_len, 0);
         }
 
-        let cp = unsafe { ContainerPermission::from_raw(raw_cp) };
+        let cp = unsafe { ContainerPermission::from_repr_c(ffi_cp) };
 
         assert_eq!(cp.container_key, "foobar");
         assert_eq!(cp.access, vec![]);
@@ -278,7 +276,7 @@ mod tests {
         // If test runs under special mode (e.g. Valgrind) we can detect memory
         // leaks
         unsafe {
-            ffi::container_permission_free(cp.into_raw());
+            ffi::container_permission_drop(cp.into_repr_c());
         }
     }
 
@@ -291,16 +289,14 @@ mod tests {
             vendor: "hey girl".to_string(),
         };
 
-        let raw = a.into_raw();
+        let ffi_a = a.into_repr_c();
 
-        unsafe {
-            assert_eq!((*raw).id_len, 4);
-            assert_eq!((*raw).scope_len, 2);
-            assert_eq!((*raw).name_len, 4);
-            assert_eq!((*raw).vendor_len, 8);
-        }
+        assert_eq!(ffi_a.id_len, 4);
+        assert_eq!(ffi_a.scope_len, 2);
+        assert_eq!(ffi_a.name_len, 4);
+        assert_eq!(ffi_a.vendor_len, 8);
 
-        let mut a = unsafe { AppExchangeInfo::from_raw(raw) };
+        let mut a = unsafe { AppExchangeInfo::from_repr_c(ffi_a) };
 
         assert_eq!(a.id, "myid");
         assert_eq!(a.scope, Some("hi".to_string()));
@@ -309,18 +305,16 @@ mod tests {
 
         a.scope = None;
 
-        let raw = a.into_raw();
+        let ffi_a = a.into_repr_c();
 
-        unsafe {
-            assert_eq!((*raw).id_len, 4);
-            assert_eq!((*raw).scope, 0 as *const u8);
-            assert_eq!((*raw).scope_len, 0);
-            assert_eq!((*raw).scope_cap, 0);
-            assert_eq!((*raw).name_len, 4);
-            assert_eq!((*raw).vendor_len, 8);
-        }
+        assert_eq!(ffi_a.id_len, 4);
+        assert_eq!(ffi_a.scope, 0 as *const u8);
+        assert_eq!(ffi_a.scope_len, 0);
+        assert_eq!(ffi_a.scope_cap, 0);
+        assert_eq!(ffi_a.name_len, 4);
+        assert_eq!(ffi_a.vendor_len, 8);
 
-        unsafe { ffi::app_exchange_info_free(raw) };
+        unsafe { ffi::app_exchange_info_drop(ffi_a) };
     }
 
     #[test]
@@ -338,12 +332,12 @@ mod tests {
             containers: vec![],
         };
 
-        let ffi = a.into_ffi();
+        let ffi = a.into_repr_c();
 
         assert_eq!(ffi.app_container, false);
         assert_eq!(ffi.containers_len, 0);
 
-        let a = unsafe { AuthReq::from_ffi(ffi) };
+        let a = unsafe { AuthReq::from_repr_c(ffi) };
 
         assert_eq!(a.app.id, "1");
         assert_eq!(a.app.scope, Some("2".to_string()));
@@ -352,6 +346,6 @@ mod tests {
         assert_eq!(a.app_container, false);
         assert_eq!(a.containers.len(), 0);
 
-        unsafe { ffi::auth_request_drop(a.into_ffi()) };
+        unsafe { ffi::auth_request_drop(a.into_repr_c()) };
     }
 }

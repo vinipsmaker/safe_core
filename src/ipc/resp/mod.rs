@@ -72,16 +72,16 @@ impl AppKeys {
     /// Consumes the object and returns the wrapped raw pointer
     ///
     /// You're now responsible for freeing this memory once you're done.
-    pub fn into_raw(self) -> *mut ffi::AppKeys {
+    pub fn into_repr_c(self) -> ffi::AppKeys {
         let AppKeys { owner_key, enc_key, sign_pk, sign_sk, enc_pk, enc_sk } = self;
-        Box::into_raw(Box::new(ffi::AppKeys {
+        ffi::AppKeys {
             owner_key: owner_key.0,
             enc_key: enc_key.0,
             sign_pk: sign_pk.0,
             sign_sk: sign_sk.0,
             enc_pk: enc_pk.0,
             enc_sk: enc_sk.0,
-        }))
+        }
     }
 
     /// Constructs the object from a raw pointer.
@@ -89,8 +89,7 @@ impl AppKeys {
     /// After calling this function, the raw pointer is owned by the resulting
     /// object.
     #[allow(unsafe_code)]
-    pub unsafe fn from_raw(raw: *mut ffi::AppKeys) -> Self {
-        let raw = Box::from_raw(raw);
+    pub unsafe fn from_repr_c(raw: ffi::AppKeys) -> Self {
         AppKeys {
             owner_key: sign::PublicKey(raw.owner_key),
             enc_key: secretbox::Key(raw.enc_key),

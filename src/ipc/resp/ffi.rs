@@ -43,6 +43,6 @@ pub struct AppKeys {
 /// Free memory
 #[no_mangle]
 #[allow(unsafe_code)]
-pub unsafe extern "C" fn app_keys_free(a: *mut AppKeys) {
-    let _ = super::AppKeys::from_raw(a);
+pub unsafe extern "C" fn app_keys_drop(a: AppKeys) {
+    let _ = super::AppKeys::from_repr_c(a);
 }

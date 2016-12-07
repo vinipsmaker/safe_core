@@ -39,13 +39,13 @@ pub enum PermissionAccess {
 /// Represents an authorization request
 pub struct AuthReq {
     /// The application identifier for this request
-    pub app: *mut AppExchangeInfo,
+    pub app: AppExchangeInfo,
     /// `true` if the app wants dedicated container for itself. `false`
     /// otherwise.
     pub app_container: bool,
 
     /// Array of `*mut ContainerPermission`
-    pub containers: *mut *mut ContainerPermission,
+    pub containers: *mut ContainerPermission,
     /// `containers`'s length
     pub containers_len: usize,
     /// Reserved by the Rust allocator
@@ -56,7 +56,7 @@ pub struct AuthReq {
 #[no_mangle]
 #[allow(unsafe_code)]
 pub unsafe extern "C" fn auth_request_drop(a: AuthReq) {
-    let _ = super::AuthReq::from_ffi(a);
+    let _ = super::AuthReq::from_repr_c(a);
 }
 
 /// Containers request
@@ -103,8 +103,8 @@ pub struct AppExchangeInfo {
 /// Free memory
 #[no_mangle]
 #[allow(unsafe_code)]
-pub unsafe extern "C" fn app_exchange_info_free(a: *mut AppExchangeInfo) {
-    let _ = super::AppExchangeInfo::from_raw(a);
+pub unsafe extern "C" fn app_exchange_info_drop(a: AppExchangeInfo) {
+    let _ = super::AppExchangeInfo::from_repr_c(a);
 }
 
 /// Represents the set of permissions for a given container
@@ -128,6 +128,6 @@ pub struct ContainerPermission {
 /// Free memory
 #[no_mangle]
 #[allow(unsafe_code)]
-pub unsafe extern "C" fn container_permission_free(cp: *mut ContainerPermission) {
-    let _ = super::ContainerPermission::from_raw(cp);
+pub unsafe extern "C" fn container_permission_drop(cp: ContainerPermission) {
+    let _ = super::ContainerPermission::from_repr_c(cp);
 }
