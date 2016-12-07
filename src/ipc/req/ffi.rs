@@ -19,6 +19,8 @@
 // Please review the Licences for the specific language governing permissions
 // and limitations relating to use of the SAFE Network Software.
 
+use util::ffi::FfiString;
+
 /// The permission type
 #[repr(C)]
 #[derive(Clone, Copy, Debug, Eq, PartialEq, RustcEncodable, RustcDecodable)]
@@ -68,11 +70,7 @@ pub struct ContainersReq;
 #[derive(Clone, Copy)]
 pub struct AppExchangeInfo {
     /// UTF-8 encoded id
-    pub id: *const u8,
-    /// `id`'s length
-    pub id_len: usize,
-    /// Used by the Rust memory allocator
-    pub id_cap: usize,
+    pub id: FfiString,
 
     /// Reserved by the frontend
     ///
@@ -88,18 +86,10 @@ pub struct AppExchangeInfo {
     pub scope_cap: usize,
 
     /// UTF-8 encoded application friendly-name.
-    pub name: *const u8,
-    /// `name`'s length
-    pub name_len: usize,
-    /// Used by the Rust memory allocator
-    pub name_cap: usize,
+    pub name: FfiString,
 
     /// UTF-8 encoded application provider/vendor (e.g. MaidSafe)
-    pub vendor: *const u8,
-    /// `vendor`'s length
-    pub vendor_len: usize,
-    /// Reserved by the Rust allocator
-    pub vendor_cap: usize,
+    pub vendor: FfiString,
 }
 
 /// Free memory
@@ -114,11 +104,7 @@ pub unsafe extern "C" fn app_exchange_info_drop(a: AppExchangeInfo) {
 #[derive(Clone, Copy)]
 pub struct ContainerPermission {
     /// The UTF-8 encoded id
-    pub container_key: *const u8,
-    /// `container_key`'s length
-    pub container_key_len: usize,
-    /// Used by the Rust memory allocator
-    pub container_key_cap: usize,
+    pub container_key: FfiString,
 
     /// The `PermissionAccess` array
     pub access: *mut PermissionAccess,
