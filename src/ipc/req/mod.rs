@@ -96,7 +96,12 @@ impl AuthReq {
 
 /// Containers request
 #[derive(RustcEncodable, RustcDecodable, Debug)]
-pub struct ContainersReq;
+pub struct ContainersReq {
+    /// Exchange info
+    pub app: AppExchangeInfo,
+    /// Requested containers
+    pub containers: Vec<ContainerPermission>,
+}
 
 /// Represents an application ID in the process of asking permissions
 #[derive(RustcEncodable, RustcDecodable, Debug)]
