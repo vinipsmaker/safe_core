@@ -32,8 +32,8 @@ use core::{self, Client, ClientKeys, CoreMsg, CoreMsgTx, NetworkEvent, NetworkTx
 use futures::Future;
 use futures::stream::Stream;
 use futures::sync::mpsc as futures_mpsc;
-use ipc::AppKeys;
-use ipc::ffi::AppKeys as FfiAppKeys;
+use ipc::resp::AppKeys;
+use ipc::resp::ffi::AppKeys as FfiAppKeys;
 use maidsafe_utilities::thread::{self, Joiner};
 use rust_sodium::crypto::{box_, secretbox};
 use self::errors::AppError;

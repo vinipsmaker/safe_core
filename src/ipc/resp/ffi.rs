@@ -21,8 +21,8 @@
 
 use rust_sodium::crypto::{box_, secretbox, sign};
 
-#[repr(C)]
 /// Represents the needed keys to work with the data
+#[repr(C)]
 pub struct AppKeys {
     /// Owner signing public key
     pub owner_key: [u8; sign::PUBLICKEYBYTES],
@@ -46,6 +46,3 @@ pub struct AppKeys {
 pub unsafe extern "C" fn app_keys_free(a: *mut AppKeys) {
     let _ = super::AppKeys::from_raw(a);
 }
-
-/// Containers response
-pub struct ContainersGranted;

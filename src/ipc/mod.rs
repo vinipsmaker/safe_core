@@ -19,18 +19,15 @@
 // Please review the Licences for the specific language governing permissions
 // and limitations relating to use of the SAFE Network Software.
 
-use routing::XorName;
-use rust_sodium::crypto::{box_, secretbox, sign};
-
-/// Ffi module
-pub mod ffi;
-
 pub use self::req::{AppExchangeInfo, AuthReq, ContainerPermission, ContainersReq, IpcReq};
+pub use self::resp::{AppKeys, AuthGranted, IpcResp};
 
 /// Errors module
 mod errors;
 /// Request module
 pub mod req;
+/// Response module
+pub mod resp;
 
 pub use self::errors::IpcError;
 
@@ -38,76 +35,6 @@ pub use self::errors::IpcError;
 /// Placeholder for `crust::Config`
 #[derive(RustcEncodable, RustcDecodable, Debug, Eq, PartialEq)]
 pub struct Config;
-
-/// Represents the needed keys to work with the data
-#[derive(RustcEncodable, RustcDecodable, Debug, Eq, PartialEq)]
-pub struct AppKeys {
-    /// Owner signing public key.
-    pub owner_key: sign::PublicKey,
-    /// Data symmetric encryption key
-    pub enc_key: secretbox::Key,
-    /// Asymmetric sign public key.
-    ///
-    /// This is the identity of the App in the Network.
-    pub sign_pk: sign::PublicKey,
-    /// Asymmetric sign private key.
-    pub sign_sk: sign::SecretKey,
-    /// Asymmetric enc public key.
-    pub enc_pk: box_::PublicKey,
-    /// Asymmetric enc private key.
-    pub enc_sk: box_::SecretKey,
-}
-
-impl AppKeys {
-    /// Consumes the object and returns the wrapped raw pointer
-    ///
-    /// You're now responsible for freeing this memory once you're done.
-    pub fn into_raw(self) -> *mut ffi::AppKeys {
-        let AppKeys { owner_key, enc_key, sign_pk, sign_sk, enc_pk, enc_sk } = self;
-        Box::into_raw(Box::new(ffi::AppKeys {
-            owner_key: owner_key.0,
-            enc_key: enc_key.0,
-            sign_pk: sign_pk.0,
-            sign_sk: sign_sk.0,
-            enc_pk: enc_pk.0,
-            enc_sk: enc_sk.0,
-        }))
-    }
-
-    /// Constructs the object from a raw pointer.
-    ///
-    /// After calling this function, the raw pointer is owned by the resulting
-    /// object.
-    #[allow(unsafe_code)]
-    pub unsafe fn from_raw(raw: *mut ffi::AppKeys) -> Self {
-        let raw = Box::from_raw(raw);
-        AppKeys {
-            owner_key: sign::PublicKey(raw.owner_key),
-            enc_key: secretbox::Key(raw.enc_key),
-            sign_pk: sign::PublicKey(raw.sign_pk),
-            sign_sk: sign::SecretKey(raw.sign_sk),
-            enc_pk: box_::PublicKey(raw.enc_pk),
-            enc_sk: box_::SecretKey(raw.enc_sk),
-        }
-    }
-}
-
-/// It represents the authentication response.
-#[derive(RustcEncodable, RustcDecodable, Debug, PartialEq, Eq)]
-pub struct AuthGranted {
-    /// The access keys.
-    pub app_keys: AppKeys,
-    /// The crust config.
-    ///
-    /// Useful to reuse bootstrap nodes and speed up access.
-    pub bootstrap_config: Config,
-    /// Access container
-    pub access_container: Option<(XorName, u64, secretbox::Nonce)>,
-}
-
-/// Containers response
-#[derive(RustcEncodable, RustcDecodable, Debug, Eq, PartialEq)]
-pub struct ContainersGranted;
 
 #[derive(RustcEncodable, RustcDecodable, Debug)]
 /// IPC message
@@ -135,14 +62,4 @@ pub enum IpcMsg {
     },
     /// Generic error like couldn't parse IpcMsg etc.
     Err(IpcError),
-}
-
-#[derive(Debug, Eq, PartialEq, RustcEncodable, RustcDecodable)]
-/// IPC response
-// TODO: `TransOwnership` variant
-pub enum IpcResp {
-    /// Authentication
-    Auth(Result<AuthGranted, IpcError>),
-    /// Containers
-    Containers(Result<ContainersGranted, IpcError>),
 }
