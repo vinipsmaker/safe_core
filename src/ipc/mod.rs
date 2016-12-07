@@ -41,8 +41,6 @@ pub struct Config;
 pub enum IpcMsg {
     /// Request
     Req {
-        /// Application ID
-        app_id: String,
         /// Request ID
         req_id: u32,
         /// Request
