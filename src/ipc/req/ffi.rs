@@ -45,7 +45,7 @@ pub struct AuthReq {
     /// otherwise.
     pub app_container: bool,
 
-    /// Array of `*mut ContainerPermission`
+    /// Array of `ContainerPermission`
     pub containers: *mut ContainerPermission,
     /// `containers`'s length
     pub containers_len: usize,
