@@ -46,7 +46,7 @@ pub struct AuthGranted {
     /// Useful to reuse bootstrap nodes and speed up access.
     pub bootstrap_config: Config,
     /// Access container
-    pub access_container: Option<(XorName, u64, secretbox::Nonce)>,
+    pub access_container: AccessContainer,
 }
 
 /// Represents the needed keys to work with the data
@@ -100,4 +100,15 @@ impl AppKeys {
             enc_sk: box_::SecretKey(raw.enc_sk),
         }
     }
+}
+
+/// Access container
+#[derive(RustcEncodable, RustcDecodable, Debug, Eq, PartialEq)]
+pub struct AccessContainer {
+    /// ID
+    pub id: XorName,
+    /// Type tag
+    pub tag: u64,
+    /// Nonce
+    pub nonce: secretbox::Nonce,
 }
