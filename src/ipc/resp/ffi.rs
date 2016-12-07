@@ -23,6 +23,7 @@ use rust_sodium::crypto::{box_, secretbox, sign};
 
 /// Represents the needed keys to work with the data
 #[repr(C)]
+#[derive(Copy)]
 pub struct AppKeys {
     /// Owner signing public key
     pub owner_key: [u8; sign::PUBLICKEYBYTES],
@@ -38,6 +39,30 @@ pub struct AppKeys {
     pub enc_pk: [u8; box_::PUBLICKEYBYTES],
     /// Asymmetric enc private key.
     pub enc_sk: [u8; box_::SECRETKEYBYTES],
+}
+
+impl Clone for AppKeys {
+    // Implemented manually because:
+    //
+    // error[E0277]: the trait bound `[u8; 64]: std::clone::Clone` is not satisfied
+    //
+    // There is a default implementation only until size 32
+    fn clone(&self) -> Self {
+        let mut sign_pk = [0; sign::PUBLICKEYBYTES];
+        let mut sign_sk = [0; sign::SECRETKEYBYTES];
+
+        sign_pk.copy_from_slice(&self.sign_pk);
+        sign_sk.copy_from_slice(&self.sign_sk);
+
+        AppKeys {
+            owner_key: self.owner_key.clone(),
+            enc_key: self.enc_key.clone(),
+            sign_pk: sign_pk,
+            sign_sk: sign_sk,
+            enc_pk: self.enc_pk.clone(),
+            enc_sk: self.enc_sk.clone(),
+        }
+    }
 }
 
 /// Free memory

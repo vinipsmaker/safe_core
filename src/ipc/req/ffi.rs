@@ -21,7 +21,7 @@
 
 /// The permission type
 #[repr(C)]
-#[derive(Clone, Debug, Eq, PartialEq, RustcEncodable, RustcDecodable)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, RustcEncodable, RustcDecodable)]
 pub enum PermissionAccess {
     /// Read
     Read,
@@ -35,8 +35,9 @@ pub enum PermissionAccess {
     ManagePermissions,
 }
 
-#[repr(C)]
 /// Represents an authorization request
+#[repr(C)]
+#[derive(Clone, Copy)]
 pub struct AuthReq {
     /// The application identifier for this request
     pub app: AppExchangeInfo,
@@ -62,8 +63,9 @@ pub unsafe extern "C" fn auth_request_drop(a: AuthReq) {
 /// Containers request
 pub struct ContainersReq;
 
-#[repr(C)]
 /// Represents an application ID in the process of asking permissions
+#[repr(C)]
+#[derive(Clone, Copy)]
 pub struct AppExchangeInfo {
     /// UTF-8 encoded id
     pub id: *const u8,
@@ -109,6 +111,7 @@ pub unsafe extern "C" fn app_exchange_info_drop(a: AppExchangeInfo) {
 
 /// Represents the set of permissions for a given container
 #[repr(C)]
+#[derive(Clone, Copy)]
 pub struct ContainerPermission {
     /// The UTF-8 encoded id
     pub container_key: *const u8,
