@@ -57,22 +57,14 @@ impl AuthReq {
     pub fn into_repr_c(self) -> ffi::AuthReq {
         let AuthReq { app, app_container, containers } = self;
 
-        let mut containers: Vec<_> = containers.into_iter()
+        let containers: Vec<_> = containers.into_iter()
             .map(|c| c.into_repr_c())
             .collect();
-
-        let c_ptr = containers.as_mut_ptr();
-        let c_len = containers.len();
-        let c_cap = containers.capacity();
-
-        mem::forget(containers);
 
         ffi::AuthReq {
             app: app.into_repr_c(),
             app_container: app_container,
-            containers: c_ptr,
-            containers_len: c_len,
-            containers_cap: c_cap,
+            containers: ffi::ContainerPermissionArray::from_vec(containers),
         }
     }
 
@@ -82,9 +74,8 @@ impl AuthReq {
     /// resulting object.
     #[allow(unsafe_code)]
     pub unsafe fn from_repr_c(repr_c: ffi::AuthReq) -> Self {
-        let ffi::AuthReq { app, app_container, containers, containers_len, containers_cap } =
-            repr_c;
-        let containers = Vec::from_raw_parts(containers, containers_len, containers_cap)
+        let ffi::AuthReq { app, app_container, containers } = repr_c;
+        let containers: Vec<_> = containers.into_vec()
             .into_iter()
             .map(|c| ContainerPermission::from_repr_c(c))
             .collect();
@@ -301,7 +292,7 @@ mod tests {
         let ffi = a.into_repr_c();
 
         assert_eq!(ffi.app_container, false);
-        assert_eq!(ffi.containers_len, 0);
+        assert_eq!(ffi.containers.len, 0);
 
         let a = unsafe { AuthReq::from_repr_c(ffi) };
 

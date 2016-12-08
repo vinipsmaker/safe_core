@@ -19,6 +19,7 @@
 // Please review the Licences for the specific language governing permissions
 // and limitations relating to use of the SAFE Network Software.
 
+use std::mem;
 use util::ffi::FfiString;
 
 /// The permission type
@@ -48,11 +49,7 @@ pub struct AuthReq {
     pub app_container: bool,
 
     /// Array of `ContainerPermission`
-    pub containers: *mut ContainerPermission,
-    /// `containers`'s length
-    pub containers_len: usize,
-    /// Reserved by the Rust allocator
-    pub containers_cap: usize,
+    pub containers: ContainerPermissionArray,
 }
 
 /// Free memory from the subobjects
@@ -119,4 +116,46 @@ pub struct ContainerPermission {
 #[allow(unsafe_code)]
 pub unsafe extern "C" fn container_permission_drop(cp: ContainerPermission) {
     let _ = super::ContainerPermission::from_repr_c(cp);
+}
+
+/// Wrapper for ContainerPermission arrays to be passed across FFI boundary.
+#[repr(C)]
+#[derive(Clone, Copy)]
+pub struct ContainerPermissionArray {
+    /// Pointer to first byte
+    pub ptr: *mut ContainerPermission,
+    /// Number of elements
+    pub len: usize,
+    /// Reserved by Rust allocator
+    pub cap: usize,
+}
+
+impl ContainerPermissionArray {
+    /// Construct owning `ContainerPermissionArray` from `Vec`. It has to be
+    /// deallocated manually by calling `container_permission_array_free`
+    pub fn from_vec(mut v: Vec<ContainerPermission>) -> Self {
+        let p = v.as_mut_ptr();
+        let len = v.len();
+        let cap = v.capacity();
+        mem::forget(v);
+
+        ContainerPermissionArray {
+            ptr: p,
+            len: len,
+            cap: cap,
+        }
+    }
+
+    /// Consumes this `ContainerPermissionArray` into a `Vec`
+    #[allow(unsafe_code)]
+    pub unsafe fn into_vec(&self) -> Vec<ContainerPermission> {
+        Vec::from_raw_parts(self.ptr, self.len, self.cap)
+    }
+}
+
+/// Free the array from memory.
+#[no_mangle]
+#[allow(unsafe_code)]
+pub unsafe extern "C" fn container_permission_array_free(s: ContainerPermissionArray) {
+    let _ = s.into_vec();
 }
