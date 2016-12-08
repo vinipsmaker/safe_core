@@ -96,6 +96,41 @@ pub struct ContainersReq {
     pub containers: Vec<ContainerPermission>,
 }
 
+impl ContainersReq {
+    /// Consumes the object and returns the FFI counterpart.
+    ///
+    /// You're now responsible for freeing the subobjects memory once you're
+    /// done.
+    pub fn into_repr_c(self) -> ffi::ContainersReq {
+        let ContainersReq { app, containers } = self;
+        let containers: Vec<_> = containers.into_iter()
+            .map(|c| c.into_repr_c())
+            .collect();
+
+        ffi::ContainersReq {
+            app: app.into_repr_c(),
+            containers: ffi::ContainerPermissionArray::from_vec(containers),
+        }
+    }
+
+    /// Constructs the object from the FFI counterpart.
+    ///
+    /// After calling this functions, the subobjects memory is owned by the
+    /// resulting object.
+    #[allow(unsafe_code)]
+    pub unsafe fn from_repr_c(repr_c: ffi::ContainersReq) -> Self {
+        let ffi::ContainersReq { app, containers } = repr_c;
+        let containers: Vec<_> = containers.into_vec()
+            .into_iter()
+            .map(|c| ContainerPermission::from_repr_c(c))
+            .collect();
+        ContainersReq {
+            app: AppExchangeInfo::from_repr_c(app),
+            containers: containers,
+        }
+    }
+}
+
 /// Represents an application ID in the process of asking permissions
 #[derive(RustcEncodable, RustcDecodable, Debug)]
 pub struct AppExchangeInfo {
@@ -296,5 +331,34 @@ mod tests {
         assert_eq!(a.containers.len(), 0);
 
         unsafe { ffi::auth_request_drop(a.into_repr_c()) };
+    }
+
+    #[test]
+    fn containers_req() {
+        let app = AppExchangeInfo {
+            id: "1".to_string(),
+            scope: Some("2".to_string()),
+            name: "3".to_string(),
+            vendor: "4".to_string(),
+        };
+
+        let a = ContainersReq {
+            app: app,
+            containers: vec![],
+        };
+
+        let ffi = a.into_repr_c();
+
+        assert_eq!(ffi.containers.len, 0);
+
+        let a = unsafe { ContainersReq::from_repr_c(ffi) };
+
+        assert_eq!(a.app.id, "1");
+        assert_eq!(a.app.scope, Some("2".to_string()));
+        assert_eq!(a.app.name, "3");
+        assert_eq!(a.app.vendor, "4");
+        assert_eq!(a.containers.len(), 0);
+
+        unsafe { ffi::containers_req_drop(a.into_repr_c()) };
     }
 }

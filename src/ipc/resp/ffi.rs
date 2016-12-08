@@ -21,6 +21,24 @@
 
 use rust_sodium::crypto::{box_, secretbox, sign};
 
+// TODO: crust Config once it's no longer a stub
+/// It represents the authentication response.
+#[repr(C)]
+#[derive(Clone, Copy)]
+pub struct AuthGranted {
+    /// The access keys.
+    pub app_keys: AppKeys,
+    /// Access container
+    pub access_container: AccessContainer,
+}
+
+/// Free memory
+#[no_mangle]
+#[allow(unsafe_code)]
+pub unsafe extern "C" fn auth_granted_drop(a: AuthGranted) {
+    let _ = super::AuthGranted::from_repr_c(a);
+}
+
 /// Represents the needed keys to work with the data
 #[repr(C)]
 #[derive(Copy)]
@@ -70,4 +88,23 @@ impl Clone for AppKeys {
 #[allow(unsafe_code)]
 pub unsafe extern "C" fn app_keys_drop(a: AppKeys) {
     let _ = super::AppKeys::from_repr_c(a);
+}
+
+/// Access container
+#[repr(C)]
+#[derive(Clone, Copy)]
+pub struct AccessContainer {
+    /// ID
+    pub id: [u8; 32],
+    /// Type tag
+    pub tag: u64,
+    /// Nonce
+    pub nonce: [u8; secretbox::NONCEBYTES],
+}
+
+/// Free memory
+#[no_mangle]
+#[allow(unsafe_code)]
+pub unsafe extern "C" fn access_container_drop(a: AccessContainer) {
+    let _ = super::AccessContainer::from_repr_c(a);
 }

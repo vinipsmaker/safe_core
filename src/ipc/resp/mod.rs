@@ -49,6 +49,33 @@ pub struct AuthGranted {
     pub access_container: AccessContainer,
 }
 
+impl AuthGranted {
+    /// Consumes the object and returns the wrapped raw pointer
+    ///
+    /// You're now responsible for freeing this memory once you're done.
+    pub fn into_repr_c(self) -> ffi::AuthGranted {
+        let AuthGranted { app_keys, access_container, .. } = self;
+        ffi::AuthGranted {
+            app_keys: app_keys.into_repr_c(),
+            access_container: access_container.into_repr_c(),
+        }
+    }
+
+    /// Constructs the object from a raw pointer.
+    ///
+    /// After calling this function, the raw pointer is owned by the resulting
+    /// object.
+    #[allow(unsafe_code)]
+    pub unsafe fn from_repr_c(repr_c: ffi::AuthGranted) -> Self {
+        let ffi::AuthGranted { app_keys, access_container } = repr_c;
+        AuthGranted {
+            app_keys: AppKeys::from_repr_c(app_keys),
+            bootstrap_config: Config,
+            access_container: AccessContainer::from_repr_c(access_container),
+        }
+    }
+}
+
 /// Represents the needed keys to work with the data
 #[derive(RustcEncodable, RustcDecodable, Debug, Eq, PartialEq)]
 pub struct AppKeys {
@@ -110,4 +137,84 @@ pub struct AccessContainer {
     pub tag: u64,
     /// Nonce
     pub nonce: secretbox::Nonce,
+}
+
+impl AccessContainer {
+    /// Consumes the object and returns the wrapped raw pointer
+    ///
+    /// You're now responsible for freeing this memory once you're done.
+    pub fn into_repr_c(self) -> ffi::AccessContainer {
+        let AccessContainer { id, tag, nonce } = self;
+        ffi::AccessContainer {
+            id: id.0,
+            tag: tag,
+            nonce: nonce.0,
+        }
+    }
+
+    /// Constructs the object from a raw pointer.
+    ///
+    /// After calling this function, the raw pointer is owned by the resulting
+    /// object.
+    #[allow(unsafe_code)]
+    pub unsafe fn from_repr_c(repr_c: ffi::AccessContainer) -> Self {
+        AccessContainer {
+            id: XorName(repr_c.id),
+            tag: repr_c.tag,
+            nonce: secretbox::Nonce(repr_c.nonce),
+        }
+    }
+}
+
+#[cfg(test)]
+#[allow(unsafe_code)]
+mod tests {
+    use rust_sodium::crypto::{box_, secretbox, sign};
+    use super::*;
+
+    #[test]
+    fn app_keys() {
+        let (ok, _) = sign::gen_keypair();
+        let (pk, sk) = sign::gen_keypair();
+        let key = secretbox::gen_key();
+        let (ourpk, oursk) = box_::gen_keypair();
+        let ak = AppKeys {
+            owner_key: ok.clone(),
+            enc_key: key.clone(),
+            sign_pk: pk.clone(),
+            sign_sk: sk.clone(),
+            enc_pk: ourpk.clone(),
+            enc_sk: oursk.clone(),
+        };
+
+        let ffi_ak = ak.into_repr_c();
+
+        assert_eq!(ffi_ak.owner_key.iter().collect::<Vec<_>>(),
+                   ok.0.iter().collect::<Vec<_>>());
+        assert_eq!(ffi_ak.enc_key.iter().collect::<Vec<_>>(),
+                   key.0.iter().collect::<Vec<_>>());
+        assert_eq!(ffi_ak.sign_pk.iter().collect::<Vec<_>>(),
+                   pk.0.iter().collect::<Vec<_>>());
+        assert_eq!(ffi_ak.sign_sk.iter().collect::<Vec<_>>(),
+                   sk.0.iter().collect::<Vec<_>>());
+        assert_eq!(ffi_ak.enc_pk.iter().collect::<Vec<_>>(),
+                   ourpk.0.iter().collect::<Vec<_>>());
+        assert_eq!(ffi_ak.enc_sk.iter().collect::<Vec<_>>(),
+                   oursk.0.iter().collect::<Vec<_>>());
+
+        let ak = unsafe { AppKeys::from_repr_c(ffi_ak) };
+
+        assert_eq!(ak.owner_key, ok);
+        assert_eq!(ak.enc_key, key);
+        assert_eq!(ak.sign_pk, pk);
+        assert_eq!(ak.sign_sk, sk);
+        assert_eq!(ak.enc_pk, ourpk);
+        assert_eq!(ak.enc_sk, oursk);
+
+        // If test runs under special mode (e.g. Valgrind) we can detect memory
+        // leaks
+        unsafe {
+            ffi::app_keys_drop(ak.into_repr_c());
+        }
+    }
 }

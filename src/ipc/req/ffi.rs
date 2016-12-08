@@ -60,7 +60,21 @@ pub unsafe extern "C" fn auth_request_drop(a: AuthReq) {
 }
 
 /// Containers request
-pub struct ContainersReq;
+#[repr(C)]
+#[derive(Clone, Copy)]
+pub struct ContainersReq {
+    /// Exchange info
+    pub app: AppExchangeInfo,
+    /// Requested containers
+    pub containers: ContainerPermissionArray,
+}
+
+/// Free memory from the subobjects
+#[no_mangle]
+#[allow(unsafe_code)]
+pub unsafe extern "C" fn containers_req_drop(c: ContainersReq) {
+    let _ = super::ContainersReq::from_repr_c(c);
+}
 
 /// Represents an application ID in the process of asking permissions
 #[repr(C)]
