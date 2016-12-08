@@ -171,19 +171,11 @@ impl ContainerPermission {
     ///
     /// You're now responsible for freeing this memory once you're done.
     pub fn into_repr_c(self) -> ffi::ContainerPermission {
-        let ContainerPermission { container_key, mut access } = self;
-
-        let a_ptr = access.as_mut_ptr();
-        let a_len = access.len();
-        let a_cap = access.capacity();
-
-        mem::forget(access);
+        let ContainerPermission { container_key, access } = self;
 
         ffi::ContainerPermission {
             container_key: FfiString::from_string(container_key),
-            access: a_ptr,
-            access_len: a_len,
-            access_cap: a_cap,
+            access: ffi::PermissionAccessArray::from_vec(access),
         }
     }
 
@@ -195,7 +187,7 @@ impl ContainerPermission {
     pub unsafe fn from_repr_c(raw: ffi::ContainerPermission) -> Self {
         let r = ContainerPermission {
             container_key: unwrap!(raw.container_key.to_string()),
-            access: Vec::from_raw_parts(raw.access, raw.access_len, raw.access_cap),
+            access: raw.access.into_vec(),
         };
         ffi_string_free(raw.container_key);
         r
@@ -218,7 +210,7 @@ mod tests {
 
         unsafe {
             assert_eq!(unwrap!(ffi_cp.container_key.as_str()), "foobar");
-            assert_eq!(ffi_cp.access_len, 0);
+            assert_eq!(ffi_cp.access.len, 0);
         }
 
         let cp = unsafe { ContainerPermission::from_repr_c(ffi_cp) };
